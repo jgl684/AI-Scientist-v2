@@ -14,6 +14,35 @@ copy_data: True
 
 exp_name: run # a random experiment name will be generated if not provided
 
+# ============================================================
+# 统一模型配置（所有模型名称集中在此配置）
+# ============================================================
+models:
+  # 实验代码生成模型
+  code: deepseek-v4-pro
+  # 代码执行结果评估模型
+  feedback: deepseek-v4-flash
+  # 图表分析多模态模型（需要视觉能力）
+  vlm_feedback: qwen-vl-max
+  # 论文撰写模型（主模型，用于生成 LaTeX 正文）
+  writeup: deepseek-v4-pro
+  # 论文撰写模型（辅助模型，用于图表描述等轻量任务）
+  writeup_small: deepseek-v4-flash
+  # 引用收集模型
+  citation: deepseek-v4-flash
+  # 论文审阅模型
+  review: deepseek-v4-pro
+  # 图表聚合模型
+  agg_plots: deepseek-v4-pro
+  # 实验报告生成模型
+  report: deepseek-v4-pro
+  # 日志摘要模型
+  summary: deepseek-v4-flash
+  # 最佳节点选择模型
+  select_node: deepseek-v4-pro
+  # 创意生成模型
+  ideation: deepseek-v4-pro
+
 # settings for code execution
 exec:
   timeout: 3600
@@ -54,19 +83,18 @@ agent:
 
   # LLM settings for coding
   code:
-    model: anthropic.claude-3-5-sonnet-20241022-v2:0
+    model: deepseek-v4-pro
     temp: 1.0
     max_tokens: 12000
 
   # LLM settings for evaluating program output / tracebacks
   feedback:
-    model: gpt-4o-2024-11-20
-    # gpt-4o
+    model: deepseek-v4-flash
     temp: 0.5
     max_tokens: 8192
 
   vlm_feedback:
-    model: gpt-4o-2024-11-20
+    model: qwen-vl-max
     temp: 0.5
     max_tokens: null
 
@@ -75,13 +103,11 @@ agent:
     debug_prob: 0.5
     num_drafts: 3
 
-  # Options for summarizing findings and selecting the best node
-  # If not specified, the default behavior will be used.
+  # 日志摘要和最佳节点选择
+  summary:
+    model: deepseek-v4-flash
+    temp: 0.3
 
-  # summary:
-  #   model: gpt-4o
-  #   temp: 0.3
-
-  # select_node:
-  #   model: gpt-4o
-  #   temp: 0.3
+  select_node:
+    model: deepseek-v4-pro
+    temp: 0.3

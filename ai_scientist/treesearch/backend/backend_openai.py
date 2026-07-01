@@ -18,9 +18,28 @@ OPENAI_TIMEOUT_EXCEPTIONS = (
 )
 
 def get_ai_client(model: str, max_retries=2) -> openai.OpenAI:
+    import os
     if model.startswith("ollama/"):
         client = openai.OpenAI(
-            base_url="http://localhost:11434/v1", 
+            base_url="http://localhost:11434/v1",
+            max_retries=max_retries
+        )
+    elif model.startswith("deepseek"):
+        client = openai.OpenAI(
+            api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
+            base_url="https://api.deepseek.com",
+            max_retries=max_retries
+        )
+    elif model.startswith("qwen-vl"):
+        client = openai.OpenAI(
+            api_key=os.environ.get("DASHSCOPE_API_KEY", ""),
+            base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+            max_retries=max_retries
+        )
+    elif "gemini" in model:
+        client = openai.OpenAI(
+            api_key=os.environ.get("GEMINI_API_KEY", ""),
+            base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
             max_retries=max_retries
         )
     else:

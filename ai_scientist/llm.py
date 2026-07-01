@@ -30,7 +30,11 @@ AVAILABLE_LLMS = [
     "o1-mini-2024-09-12",
     "o3-mini",
     "o3-mini-2025-01-31",
-    # DeepSeek Models
+    # DeepSeek Models (via DeepSeek API)
+    "deepseek-v4-flash",
+    "deepseek-v4-pro",
+    "deepseek-chat",
+    "deepseek-reasoner",
     "deepseek-coder-v2-0724",
     "deepcoder-14b",
     # Llama 3 models
@@ -133,10 +137,10 @@ def get_batch_responses_from_llm(
         new_msg_history = [
             new_msg_history + [{"role": "assistant", "content": c}] for c in content
         ]
-    elif model == "deepseek-coder-v2-0724":
+    elif "deepseek" in model.lower():
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
-            model="deepseek-coder",
+            model=model,
             messages=[
                 {"role": "system", "content": system_message},
                 *new_msg_history,
@@ -250,7 +254,19 @@ def make_llm_call(client, model, temperature, system_message, prompt):
             n=1,
             seed=0,
         )
-    
+    elif "deepseek" in model.lower():
+        return client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_message},
+                *prompt,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+            n=1,
+            stop=None,
+        )
+
     else:
         raise ValueError(f"Model {model} not supported.")
 
@@ -346,18 +362,14 @@ def get_response_from_llm(
         )
         content = response.choices[0].message.content
         new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
-    elif model == "deepseek-coder-v2-0724":
+    elif model.startswith("deepseek"):
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
-        response = client.chat.completions.create(
-            model="deepseek-coder",
-            messages=[
-                {"role": "system", "content": system_message},
-                *new_msg_history,
-            ],
-            temperature=temperature,
-            max_tokens=MAX_NUM_TOKENS,
-            n=1,
-            stop=None,
+        response = make_llm_call(
+            client,
+            model,
+            temperature,
+            system_message=system_message,
+            prompt=new_msg_history,
         )
         content = response.choices[0].message.content
         new_msg_history = new_msg_history + [{"role": "assistant", "content": content}]
@@ -501,11 +513,11 @@ def create_client(model) -> tuple[Any, str]:
     elif "o1" in model or "o3" in model:
         print(f"使用 OpenAI API，模型 {model}。")
         return openai.OpenAI(), model
-    elif model == "deepseek-coder-v2-0724":
-        print(f"Using OpenAI API with {model}.")
+    elif model.startswith("deepseek"):
+        print(f"使用 DeepSeek API，模型 {model}。")
         return (
             openai.OpenAI(
-                api_key=os.environ["DEEPSEEK_API_KEY"],
+                api_key=os.environ.get("DEEPSEEK_API_KEY", ""),
                 base_url="https://api.deepseek.com",
             ),
             model,

@@ -6,6 +6,7 @@ import torch
 import os
 import re
 import sys
+import yaml
 from datetime import datetime
 from ai_scientist.llm import create_client
 
@@ -28,6 +29,13 @@ from ai_scientist.perform_vlm_review import perform_imgs_cap_ref_review
 from ai_scientist.utils.token_tracker import token_tracker
 
 
+def load_models_from_config(config_path="bfts_config.yaml"):
+    """从 bfts_config.yaml 加载 models 配置"""
+    with open(config_path, "r") as f:
+        config = yaml.safe_load(f)
+    return config.get("models", {})
+
+
 def print_time():
     print(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
@@ -40,93 +48,94 @@ def save_token_tracker(idea_dir):
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Run AI scientist experiments")
+    parser = argparse.ArgumentParser(description="运行 AI Scientist 实验")
     parser.add_argument(
         "--writeup-type",
         type=str,
         default="icbinb",
         choices=["normal", "icbinb"],
-        help="Type of writeup to generate (normal=8 page, icbinb=4 page)",
+        help="论文类型 (normal=8页, icbinb=4页)",
     )
     parser.add_argument(
         "--load_ideas",
         type=str,
         default="ideas/i_cant_believe_its_not_better.json",
-        help="Path to a JSON file containing pregenerated ideas",
+        help="预生成创意 JSON 文件路径",
     )
     parser.add_argument(
         "--load_code",
         action="store_true",
-        help="If set, load a Python file with same name as ideas file but .py extension",
+        help="是否加载与 JSON 同名的 .py 代码文件",
     )
     parser.add_argument(
         "--idea_idx",
         type=int,
         default=0,
-        help="Index of the idea to run",
+        help="要运行的创意索引",
     )
     parser.add_argument(
         "--add_dataset_ref",
         action="store_true",
-        help="If set, add a HF dataset reference to the idea",
+        help="是否添加 HuggingFace 数据集引用",
     )
     parser.add_argument(
         "--writeup-retries",
         type=int,
         default=3,
-        help="Number of writeup attempts to try",
+        help="论文撰写重试次数",
     )
     parser.add_argument(
         "--attempt_id",
         type=int,
         default=0,
-        help="Attempt ID, used to distinguish same idea in different attempts in parallel runs",
+        help="尝试 ID，用于区分并行运行中的同一创意",
     )
+    # 以下模型参数设为 None 表示从配置文件读取
     parser.add_argument(
         "--model_agg_plots",
         type=str,
-        default="o3-mini-2025-01-31",
-        help="Model to use for plot aggregation",
+        default=None,
+        help="图表聚合模型（默认从 bfts_config.yaml 读取）",
     )
     parser.add_argument(
         "--model_writeup",
         type=str,
-        default="o1-preview-2024-09-12",
-        help="Model to use for writeup",
+        default=None,
+        help="论文撰写主模型（默认从 bfts_config.yaml 读取）",
     )
     parser.add_argument(
         "--model_citation",
         type=str,
-        default="gpt-4o-2024-11-20",
-        help="Model to use for citation gathering",
+        default=None,
+        help="引用收集模型（默认从 bfts_config.yaml 读取）",
     )
     parser.add_argument(
         "--num_cite_rounds",
         type=int,
         default=20,
-        help="Number of citation rounds to perform",
+        help="引用收集轮数",
     )
     parser.add_argument(
         "--model_writeup_small",
         type=str,
-        default="gpt-4o-2024-05-13",
-        help="Smaller model to use for writeup",
+        default=None,
+        help="论文撰写辅助模型（默认从 bfts_config.yaml 读取）",
     )
     parser.add_argument(
         "--model_review",
         type=str,
-        default="gpt-4o-2024-11-20",
-        help="Model to use for review main text and captions",
+        default=None,
+        help="论文审阅模型（默认从 bfts_config.yaml 读取）",
     )
     parser.add_argument(
         "--skip_writeup",
         action="store_true",
-        help="If set, skip the writeup process",
+        help="跳过论文撰写",
     )
     parser.add_argument(
         "--skip_review",
         action="store_true",
-        help="If set, skip the review process",
+        help="跳过论文审阅",
     )
     return parser.parse_args()
 
@@ -181,6 +190,21 @@ def redirect_stdout_stderr_to_file(log_file_path):
 
 if __name__ == "__main__":
     args = parse_arguments()
+
+    # 从配置文件加载模型配置
+    model_config = load_models_from_config("bfts_config.yaml")
+
+    # CLI 参数覆盖配置文件中的模型设置
+    model_agg_plots = args.model_agg_plots or model_config.get("agg_plots", "deepseek-v4-pro")
+    model_writeup = args.model_writeup or model_config.get("writeup", "deepseek-v4-pro")
+    model_citation = args.model_citation or model_config.get("citation", "deepseek-v4-flash")
+    model_writeup_small = args.model_writeup_small or model_config.get("writeup_small", "deepseek-v4-flash")
+    model_review = args.model_review or model_config.get("review", "deepseek-v4-pro")
+
+    print(f"模型配置: agg_plots={model_agg_plots}, writeup={model_writeup}, "
+          f"citation={model_citation}, writeup_small={model_writeup_small}, "
+          f"review={model_review}")
+
     os.environ["AI_SCIENTIST_ROOT"] = os.path.dirname(os.path.abspath(__file__))
     print(f"已设置 AI_SCIENTIST_ROOT 为 {os.environ['AI_SCIENTIST_ROOT']}")
 
@@ -262,7 +286,7 @@ if __name__ == "__main__":
             dirs_exist_ok=True,
         )
 
-    aggregate_plots(base_folder=idea_dir, model=args.model_agg_plots)
+    aggregate_plots(base_folder=idea_dir, model=model_agg_plots)
 
     shutil.rmtree(osp.join(idea_dir, "experiment_results"))
 
@@ -273,23 +297,23 @@ if __name__ == "__main__":
         citations_text = gather_citations(
             idea_dir,
             num_cite_rounds=args.num_cite_rounds,
-            small_model=args.model_citation,
+            small_model=model_citation,
         )
         for attempt in range(args.writeup_retries):
             print(f"论文撰写尝试 {attempt+1}/{args.writeup_retries}")
             if args.writeup_type == "normal":
                 writeup_success = perform_writeup(
                     base_folder=idea_dir,
-                    small_model=args.model_writeup_small,
-                    big_model=args.model_writeup,
+                    small_model=model_writeup_small,
+                    big_model=model_writeup,
                     page_limit=8,
                     citations_text=citations_text,
                 )
             else:
                 writeup_success = perform_icbinb_writeup(
                     base_folder=idea_dir,
-                    small_model=args.model_writeup_small,
-                    big_model=args.model_writeup,
+                    small_model=model_writeup_small,
+                    big_model=model_writeup,
                     page_limit=4,
                     citations_text=citations_text,
                 )
@@ -307,7 +331,7 @@ if __name__ == "__main__":
         if os.path.exists(pdf_path):
             print("论文位于: ", pdf_path)
             paper_content = load_paper(pdf_path)
-            client, client_model = create_client(args.model_review)
+            client, client_model = create_client(model_review)
             review_text = perform_review(paper_content, client_model, client)
             review_img_cap_ref = perform_imgs_cap_ref_review(
                 client, client_model, pdf_path

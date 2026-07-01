@@ -11,11 +11,16 @@ from ai_scientist.utils.token_tracker import track_token_usage
 MAX_NUM_TOKENS = 4096
 
 AVAILABLE_VLMS = [
+    # OpenAI 多模态模型
     "gpt-4o-2024-05-13",
     "gpt-4o-2024-08-06",
     "gpt-4o-2024-11-20",
     "gpt-4o-mini-2024-07-18",
     "o3-mini",
+
+    # 通义千问 VL（阿里云 DashScope）
+    "qwen-vl-max",
+    "qwen-vl-plus",
 
     # Ollama models
 
@@ -88,6 +93,18 @@ def make_llm_call(client, model, temperature, system_message, prompt):
             n=1,
             seed=0,
         )
+    elif model.startswith("qwen-vl"):
+        return client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_message},
+                *prompt,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+            n=1,
+            seed=0,
+        )
     else:
         raise ValueError(f"Model {model} not supported.")
 
@@ -105,6 +122,16 @@ def make_vlm_call(client, model, temperature, system_message, prompt):
             max_tokens=MAX_NUM_TOKENS,
         )
     elif "gpt" in model:
+        return client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": system_message},
+                *prompt,
+            ],
+            temperature=temperature,
+            max_tokens=MAX_NUM_TOKENS,
+        )
+    elif model.startswith("qwen-vl"):
         return client.chat.completions.create(
             model=model,
             messages=[
@@ -203,6 +230,14 @@ def create_client(model: str) -> tuple[Any, str]:
     ]:
         print(f"使用 OpenAI API，模型 {model}。")
         return openai.OpenAI(), model
+    elif model.startswith("qwen-vl"):
+        print(f"使用阿里云 DashScope API，模型 {model}。")
+        if "DASHSCOPE_API_KEY" not in os.environ:
+            raise ValueError("DASHSCOPE_API_KEY 环境变量未设置")
+        return openai.OpenAI(
+            api_key=os.environ["DASHSCOPE_API_KEY"],
+            base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
+        ), model
     elif model.startswith("ollama/"):
         print(f"使用 Ollama API，模型 {model}。")
         return openai.OpenAI(

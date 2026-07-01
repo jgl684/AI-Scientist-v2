@@ -465,7 +465,7 @@ class Journal:
 
         try:
             if cfg is None or cfg.agent.get("select_node", None) is None:
-                model = "gpt-4o"
+                model = "deepseek-v4-pro"
                 temperature = 0.3
             else:
                 model = cfg.agent.select_node.model
@@ -537,7 +537,7 @@ class Journal:
                 "2. 常见的失败模式和需要避免的陷阱\n"
                 "3. 基于成功和失败经验的具体建议"
             ),
-            model=model_kwargs.get("model", "gpt-4o"),
+            model=model_kwargs.get("model", "deepseek-v4-pro"),
             temperature=model_kwargs.get("temp", 0.3)
         )
 
@@ -600,7 +600,7 @@ class Journal:
         stage_summary = query(
             system_message=summary_prompt,
             user_message="生成本阶段实验发现的全面总结",
-            model=cfg.agent.summary.model if cfg.agent.get("summary", None) else "gpt-4o",
+            model=cfg.agent.summary.model if cfg.agent.get("summary", None) else "deepseek-v4-pro",
             temperature=cfg.agent.summary.temp if cfg.agent.get("summary", None) else 0.3
         )
 
