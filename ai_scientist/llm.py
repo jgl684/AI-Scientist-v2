@@ -479,27 +479,27 @@ def extract_json_between_markers(llm_output: str) -> dict | None:
 
 def create_client(model) -> tuple[Any, str]:
     if model.startswith("claude-"):
-        print(f"Using Anthropic API with model {model}.")
+        print(f"使用 Anthropic API，模型 {model}。")
         return anthropic.Anthropic(), model
     elif model.startswith("bedrock") and "claude" in model:
         client_model = model.split("/")[-1]
-        print(f"Using Amazon Bedrock with model {client_model}.")
+        print(f"使用 Amazon Bedrock，模型 {client_model}。")
         return anthropic.AnthropicBedrock(), client_model
     elif model.startswith("vertex_ai") and "claude" in model:
         client_model = model.split("/")[-1]
-        print(f"Using Vertex AI with model {client_model}.")
+        print(f"使用 Vertex AI，模型 {client_model}。")
         return anthropic.AnthropicVertex(), client_model
     elif model.startswith("ollama/"):
-        print(f"Using Ollama with model {model}.")
+        print(f"使用 Ollama，模型 {model}。")
         return openai.OpenAI(
             api_key=os.environ.get("OLLAMA_API_KEY", ""),
             base_url="http://localhost:11434/v1",
         ), model
     elif "gpt" in model:
-        print(f"Using OpenAI API with model {model}.")
+        print(f"使用 OpenAI API，模型 {model}。")
         return openai.OpenAI(), model
     elif "o1" in model or "o3" in model:
-        print(f"Using OpenAI API with model {model}.")
+        print(f"使用 OpenAI API，模型 {model}。")
         return openai.OpenAI(), model
     elif model == "deepseek-coder-v2-0724":
         print(f"Using OpenAI API with {model}.")
@@ -511,7 +511,7 @@ def create_client(model) -> tuple[Any, str]:
             model,
         )
     elif model == "deepcoder-14b":
-        print(f"Using HuggingFace API with {model}.")
+        print(f"使用 HuggingFace API，模型 {model}。")
         # Using OpenAI client with HuggingFace API
         if "HUGGINGFACE_API_KEY" not in os.environ:
             raise ValueError("HUGGINGFACE_API_KEY environment variable not set")

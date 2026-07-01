@@ -182,21 +182,21 @@ def redirect_stdout_stderr_to_file(log_file_path):
 if __name__ == "__main__":
     args = parse_arguments()
     os.environ["AI_SCIENTIST_ROOT"] = os.path.dirname(os.path.abspath(__file__))
-    print(f"Set AI_SCIENTIST_ROOT to {os.environ['AI_SCIENTIST_ROOT']}")
+    print(f"已设置 AI_SCIENTIST_ROOT 为 {os.environ['AI_SCIENTIST_ROOT']}")
 
     # Check available GPUs and adjust parallel processes if necessary
     available_gpus = get_available_gpus()
-    print(f"Using GPUs: {available_gpus}")
+    print(f"使用 GPU: {available_gpus}")
 
     with open(args.load_ideas, "r") as f:
         ideas = json.load(f)
-        print(f"Loaded {len(ideas)} pregenerated ideas from {args.load_ideas}")
+        print(f"已加载 {len(ideas)} 个预生成的创意，来自 {args.load_ideas}")
 
     idea = ideas[args.idea_idx]
 
     date = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     idea_dir = f"experiments/{date}_{idea['Name']}_attempt_{args.attempt_id}"
-    print(f"Results will be saved in {idea_dir}")
+    print(f"结果将保存至 {idea_dir}")
     os.makedirs(idea_dir, exist_ok=True)
 
     # Convert idea json to markdown file
@@ -210,7 +210,7 @@ if __name__ == "__main__":
             with open(code_path, "r") as f:
                 code = f.read()
         else:
-            print(f"Warning: Code file {code_path} not found")
+            print(f"警告：未找到代码文件 {code_path}")
     else:
         code_path = None
 
@@ -223,7 +223,7 @@ if __name__ == "__main__":
             with open(dataset_ref_path, "r") as f:
                 dataset_ref_code = f.read()
         else:
-            print(f"Warning: Dataset reference file {dataset_ref_path} not found")
+            print(f"警告：未找到数据集引用文件 {dataset_ref_path}")
             dataset_ref_code = None
 
     if dataset_ref_code is not None and code is not None:
@@ -276,7 +276,7 @@ if __name__ == "__main__":
             small_model=args.model_citation,
         )
         for attempt in range(args.writeup_retries):
-            print(f"Writeup attempt {attempt+1} of {args.writeup_retries}")
+            print(f"论文撰写尝试 {attempt+1}/{args.writeup_retries}")
             if args.writeup_type == "normal":
                 writeup_success = perform_writeup(
                     base_folder=idea_dir,
@@ -297,7 +297,7 @@ if __name__ == "__main__":
                 break
 
         if not writeup_success:
-            print("Writeup process did not complete successfully after all retries.")
+            print("论文撰写过程在所有重试后仍未成功完成。")
 
     save_token_tracker(idea_dir)
 
@@ -305,7 +305,7 @@ if __name__ == "__main__":
         # Perform paper review if the paper exists
         pdf_path = find_pdf_path_for_review(idea_dir)
         if os.path.exists(pdf_path):
-            print("Paper found at: ", pdf_path)
+            print("论文位于: ", pdf_path)
             paper_content = load_paper(pdf_path)
             client, client_model = create_client(args.model_review)
             review_text = perform_review(paper_content, client_model, client)
@@ -316,9 +316,9 @@ if __name__ == "__main__":
                 f.write(json.dumps(review_text, indent=4))
             with open(osp.join(idea_dir, "review_img_cap_ref.json"), "w") as f:
                 json.dump(review_img_cap_ref, f, indent=4)
-            print("Paper review completed.")
+            print("论文审阅完成。")
 
-    print("Start cleaning up processes")
+    print("开始清理进程")
     # Kill all mp and torch processes associated with this experiment
     import psutil
     import signal

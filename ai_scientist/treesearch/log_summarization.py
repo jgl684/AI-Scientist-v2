@@ -10,14 +10,14 @@ from ai_scientist.llm import get_response_from_llm, extract_json_between_markers
 from ai_scientist.treesearch.backend import get_ai_client
 
 
-report_summarizer_sys_msg = """You are an expert machine learning researcher.
-You are given multiple experiment logs, each representing a node in a stage of exploring scientific ideas and implementations.
-Your task is to aggregate these logs and provide scientifically insightful information.
+report_summarizer_sys_msg = """你是一位专业的机器学习研究员。
+你会收到研究项目中单个阶段的多个实验日志。每个日志代表实验解决方案树中的不同节点。
+你的任务是汇总这些日志并提供具有科学洞察力的信息。
 
-Important instructions:
-- Do NOT hallucinate or fabricate information that is not present in the logs.
-- Do NOT introduce errors when repeating information from the logs.
-- Identify notable insights or differences across the nodes without repeating the same information.
+重要指示：
+- 请勿虚构或编造日志中不存在的信息。
+- 在重复日志中的信息时，请勿引入错误。
+- 识别各节点之间值得注意的洞察或差异，避免重复相同的信息。
 """
 
 output_format_control = """Respond in the following format:
@@ -48,52 +48,52 @@ In <JSON>, provide the review in JSON format with the following fields in exactl
 Ensure the JSON is valid and properly formatted, as it will be automatically parsed."""
 
 report_summarizer_prompt = (
-    """You are given multiple experiment logs from different "nodes". Each node represents attempts and experiments exploring various scientific ideas.
+    """你会收到来自不同"节点"的多个实验日志。每个节点代表探索各种科学理念的尝试和实验。
 
-One key point is that these nodes collectively illustrate a stage of testing different methods or approaches. The crucial task is to identify the scientific insights gleaned from this stage. For example, if one node tries method A and another node tries method B, you should compare any observed differences in performance or outcomes. Summarize both experiments in "Experiment_description", explain the processes in "Description", and place any key numerical findings (such as accuracy metrics, loss values, or runtime comparisons) in "Key_numerical_results."
+关键在于，这些节点共同展示了测试不同方法或方案的阶段。核心任务是识别从该阶段中获得的科学洞察。例如，如果一个节点尝试了方法A，另一个节点尝试了方法B，你应该比较观察到的性能或结果的差异。在"Experiment_description"中总结所有实验，在"Description"中解释实验过程，并将任何关键数值发现（如准确率指标、损失值或运行时间比较）放在"Key_numerical_results"中。
 
-Be concise and avoid repeating the same information from different nodes. You are encouraged to be thorough, but you do not need to include information from every node. Reason carefully about which results from which nodes are scientifically insightful.
+请简洁明了，避免重复来自不同节点的相同信息。鼓励你全面，但不必包含每个节点的信息。仔细推理哪些节点的哪些结果具有科学洞察力。
 
-The name of this stage of the experiment: {stage_name}
+本实验阶段的名称：{stage_name}
 
-Here are the experiment logs of the nodes:
+以下是各节点的实验日志：
 
 {node_infos}
 """
     + output_format_control
 )
 
-stage_aggregate_prompt = """You are given:
+stage_aggregate_prompt = """你收到了以下信息：
 
-1) The summary of all previous experiment stages:
+1) 所有先前实验阶段的总结：
 {prev_summary}
 
-2) The name of the current experiment stage:
+2) 当前实验阶段的名称：
 {stage_name}
 
-3) The summary of the current stage:
+3) 当前阶段的总结：
 {current_summary}
 
 
-Your task is to produce an **updated comprehensive summary** of all experiment stages, including the newly introduced results from the current stage.
+你的任务是生成一个**包含当前阶段最新结果的、更新的全面总结**。
 
-**Key Requirements:**
-1. **No Loss of Critical Information**
-   - Preserve valuable insights from the summary of all previous experiment stages. Do not remove or alter crucial texts.
-   - Absolutely no hallucinations: if something does not appear in the logs or summaries, do not invent it. If something appears in the previous summary, do not make any mistakes when repeating it.
-2. **Merge New Stage Data**
-   - Integrate relevant results from the current stage into the existing summary.
-   - Identify any overlap or repetition between new and old content, and remove only that which is clearly redundant or no longer scientifically insightful.
-   - Be very careful if you want to remove or shorten the old content. By default, you can keep most of it and append new text.
-   - Highlight how new findings connect to or differ from previous findings.
-3. **Numerical Results and Visuals**
-   - Carefully maintain the most insightful plots, figures, and numerical results.
-   - Do not delete crucial quantitative findings or meaningful visual references.
-4. **Length and Format**
-   - The final summary will likely be **very long**. That is acceptable.
-   - Present the updated summary in a format consistent with the style of the previous summaries (e.g., same section headings or structure).
+**关键要求：**
+1. **不丢失关键信息**
+   - 保留先前所有实验阶段总结中有价值的洞察。不要删除或修改关键文本。
+   - 绝对不要产生幻觉：如果某些信息未出现在日志或总结中，不要凭空编造。如果某些信息出现在先前的总结中，在重复时不要出错。
+2. **合并新阶段数据**
+   - 将当前阶段的相关结果整合到现有总结中。
+   - 识别新旧内容之间的重叠或重复，仅删除明显冗余或不再具有科学洞察力的部分。
+   - 在决定删除或缩短旧内容时要非常谨慎。默认情况下，你可以保留大部分内容并附加新文本。
+   - 强调新发现与先前发现之间的联系或差异。
+3. **数值结果和可视化**
+   - 仔细保留最具洞察力的图表、图形和数值结果。
+   - 不要删除关键的数量发现或有意义的可视化参考。
+4. **长度和格式**
+   - 最终的总结可能会**非常长**。这是可以接受的。
+   - 以与先前总结风格一致的格式呈现更新后的总结（例如，相同的章节标题或结构）。
 
-Respond in the following format:
+按以下格式回复：
 
 THOUGHT:
 <THOUGHT>
@@ -102,7 +102,7 @@ JSON:
 ```json
 <JSON>
 ```
-Ensure the JSON is valid and properly formatted, as it will be automatically parsed.
+确保JSON有效且格式正确，因为它将被自动解析。
 """
 
 
@@ -229,18 +229,18 @@ def update_summary(
     return summary_json
 
 
-overall_plan_summarizer_prompt = """You have been provided with the plans for both the parent node and the current node. Your task is to synthesize a comprehensive summary of the overall plan by integrating details from both the parent and current node plans.
-The summary should be thorough and clearly articulate the underlying motivations.
-For example, if in your previous overall plan you were experimenting with a new idea, and now your current plan is to fix certain bugs in the previous implementation, your returned overall plan should focus on your previous overall plan, and briefly mention that the current plan includes bug fixes. If your current plan is more about implementing new ideas, then you should summarize that thoroughly along with the previous overall plan.
-The goal is to create a comprehensive summary of all historical plans, focusing on the main scientific planning and objectives.
+overall_plan_summarizer_prompt = """你收到了父节点和当前节点的计划。你的任务是通过整合父节点和当前节点计划的细节，综合出一个全面的总体计划总结。
+总结应详尽，并清楚地阐明背后的动机。
+例如，如果你之前的总体计划是在尝试一个新想法，而当前的计划是修复之前实现中的某些错误，那么你返回的总体计划应该侧重于之前的总体计划，并简要提及当前计划包含错误修复。如果你当前的计划更多的是实现新想法，那么你应该将其与之前的总体计划一起详细总结。
+目标是创建一个涵盖所有历史计划的全面总结，重点关注主要的科学规划与目标。
 
-Previous overall plan:
+先前的总体计划：
 {prev_overall_plan}
 
-Current plan:
+当前计划：
 {current_plan}
 
-Respond in the following format:
+按以下格式回复：
 
 THOUGHT:
 <THOUGHT>
@@ -250,12 +250,12 @@ JSON:
 <JSON>
 ```
 
-In <THOUGHT>, thoroughly reason as an expert researcher. First, reason over each node, and then carefully combine all information. It is okay to be very detailed.
+在<THOUGHT>中，以专业研究员的身份进行彻底的推理。首先对每个节点进行推理，然后仔细组合所有信息。可以非常详细。
 
-In <JSON>, provide the review in JSON format with the following field in exactly this order:
-- "overall_plan": a string that describes the overall plan based on the current and previous overall plans
+在<JSON>中，以JSON格式提供评审，按以下顺序包含以下字段：
+- "overall_plan"：一个描述基于当前和先前总体计划的总体计划的字符串
 
-Ensure the JSON is valid and properly formatted, as it will be automatically parsed.
+确保JSON有效且格式正确，因为它将被自动解析。
 """
 
 

@@ -435,16 +435,13 @@ class Journal:
         # Create evaluation prompt for LLM
         prompt = {
             "Introduction": (
-                "You are an experienced AI researcher evaluating different implementations "
-                "of an experiment to select the best one. You should consider all aspects "
-                "including performance metrics, training dynamics, generated plots quality."
+                "你是一位经验丰富的AI研究员，正在评估实验的不同实现以选择最佳方案。"
+                "你应该考虑所有方面，包括性能指标、训练动态、生成的图表质量。"
             ),
             "Task": (
-                "Select the best implementation from the candidates below, considering all available evidence."
-                "Avoid relying too heavily on the validation loss alone, because "
-                "it may not be directly comparable across different objective functions or training details. "
-                "If there are multiple validation losses (e.g., when evaluating multiple datasets), "
-                "consider all of them and select the implementation that performs best overall."
+                "从以下候选中选择最佳实现，考虑所有可用证据。"
+                "避免过于依赖单一的验证损失，因为它可能在不同目标函数或训练细节之间无法直接比较。"
+                "如果有多个验证损失（例如评估多个数据集时），请考虑所有损失并选择整体表现最佳的实现。"
             ),
             "Candidates": "",
         }
@@ -508,9 +505,8 @@ class Journal:
 
         prompt = {
             "Introduction": (
-                "You are an AI researcher summarizing experimental progress. "
-                "Please analyze both successful and failed experiments to provide insights "
-                "for future improvements."
+                "你是一位总结实验进展的AI研究员。"
+                "请分析成功和失败的实验，为未来的改进提供洞察。"
             ),
             "Successful Experiments": "",
             "Failed Experiments": "",
@@ -536,10 +532,10 @@ class Journal:
         summary = query(
             system_message=prompt,
             user_message=(
-                "Please provide a comprehensive summary of the experimental progress that includes:\n"
-                "1. Key patterns of success across working experiments\n"
-                "2. Common failure patterns and pitfalls to avoid\n"
-                "3. Specific recommendations for future experiments based on both successes and failures"
+                "请提供实验进展的全面总结，包括：\n"
+                "1. 成功实验的关键模式\n"
+                "2. 常见的失败模式和需要避免的陷阱\n"
+                "3. 基于成功和失败经验的具体建议"
             ),
             model=model_kwargs.get("model", "gpt-4o"),
             temperature=model_kwargs.get("temp", 0.3)
@@ -589,7 +585,7 @@ class Journal:
                     json.dump(summary, f, indent=2)
 
         summary_prompt = {
-            "Introduction": "Synthesize the experimental findings from this stage",
+            "Introduction": "综合本阶段的实验发现",
             "Node Summaries": node_summaries,
             "Best Node": (
                 {
@@ -603,7 +599,7 @@ class Journal:
 
         stage_summary = query(
             system_message=summary_prompt,
-            user_message="Generate a comprehensive summary of the experimental findings in this stage",
+            user_message="生成本阶段实验发现的全面总结",
             model=cfg.agent.summary.model if cfg.agent.get("summary", None) else "gpt-4o",
             temperature=cfg.agent.summary.temp if cfg.agent.get("summary", None) else 0.3
         )

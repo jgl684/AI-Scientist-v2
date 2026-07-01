@@ -26,32 +26,32 @@ def encode_image_to_base64(image_data):
 
 
 reviewer_system_prompt_base = (
-    "You are an AI researcher who is reviewing a paper that was submitted to a prestigious ML venue."
-    "Be critical and cautious in your decision."
+    "你是一位正在审阅提交给顶级机器学习会议的论文的AI研究员。"
+    "请对你的决定持批判和谨慎态度。"
 )
 
-img_cap_ref_review_prompt = """The abstract of the paper is:
+img_cap_ref_review_prompt = """论文摘要如下：
 
 {abstract}
 
-You will be given an image via the vision API. As a careful scientist reviewer, your task is to:
-  1. Examine the provided image closely.
-  2. Describe in detail what the image shows in a scientific manner.
-  3. Critically analyze whether the image content aligns with the given caption:
+你将通过视觉 API 获得一张图像。作为一名严谨的科学家审阅人，你的任务是：
+  1. 仔细检查提供的图像。
+  2. 以科学的方式详细描述图像所展示的内容。
+  3. 批判性地分析图像内容是否与给定的图注一致：
 
 {caption}
 
-  4. We also have references in the main text that mention the figure:
+  4. 我们还有正文中提到该图的引用：
 
 {main_text_figrefs}
 
-You should:
-  - Examine the figure in detail: conclude elements in figures (e.g. name of axis) and describe what information is shown (e.g. the line of loss decreases monotonically but plateaus after X epochs)
-  - Suggest any potential improvements or issues in the figure itself (e.g., missing legend, unclear labeling, no meaningful conclusion, mismatch with what the caption claims).
-  - Critique the caption: does it accurately describe the figure? Is it too long/short? Does it include a concise takeaway?
-  - Review how well the main text references (figrefs) explain the figure: are they missing? Do they adequately describe the figure's content, context, or purpose?
+你应该：
+  - 详细检查图：总结图中的元素（例如坐标轴名称）并描述展示了什么信息（例如损失曲线单调递减但在 X 个 epoch 后趋于平稳）
+  - 对图本身提出任何潜在的改进或问题（例如，缺少图例、标签不清晰、没有有意义的结论、与图注声称的内容不匹配）。
+  - 评价图注：它是否准确描述了图？太长/太短？是否包含了简洁的要点？
+  - 审查正文引用（figrefs）对图的解释程度：是否缺失？是否充分描述了图的内容、背景或目的？
 
-Finally, respond in the following format:
+最后，请按照以下格式回复：
 
 THOUGHT:
 <THOUGHT>
@@ -60,48 +60,48 @@ REVIEW JSON:
 ```json
 <JSON>
 ```
-In <JSON>, provide the review in JSON format with the following fields in the order:
-- "Img_description": "<Describe the figure's contents here>"
-- "Img_review": "<Your analysis of the figure itself, including any suggestions for improvement>"
-- "Caption_review": "<Your assessment of how well the caption matches the figure and any suggestions>"
-- "Figrefs_review": "<Your thoughts on whether the main text references adequately describe or integrate the figure>"
+在 <JSON> 中，按顺序以 JSON 格式提供审阅，包含以下字段：
+- "Img_description": "<在此描述图的内容>"
+- "Img_review": "<你对图本身的分析，包括任何改进建议>"
+- "Caption_review": "<你对图注与图匹配程度的评估以及任何建议>"
+- "Figrefs_review": "<你对正文引用是否充分描述或整合了该图的看法>"
 
-In <THOUGHT>, first, thoroughly reason through your observations, analysis of alignment, and any suggested improvements. It is okay to be very long.
-Then provide your final structured output in <JSON>.
-Make sure the JSON is valid and properly formatted, as it will be parsed automatically."""
+在 <THOUGHT> 中，首先全面推理你的观察、对齐分析以及任何建议的改进。可以写得很长。
+然后在 <JSON> 中提供最终的结构化输出。
+确保 JSON 有效且格式正确，因为它将被自动解析。"""
 
 
-img_cap_selection_prompt = """The abstract of the paper is:
+img_cap_selection_prompt = """论文摘要如下：
 
 {abstract}
 
-You will be given an image via the vision API. As a careful scientist reviewer, your task is to:
-  1. Examine the provided image closely.
-  2. Describe in detail what the image shows in a scientific manner.
-  3. Critically analyze whether the image content aligns with the given caption:
+你将通过视觉 API 获得一张图像。作为一名严谨的科学家审阅人，你的任务是：
+  1. 仔细检查提供的图像。
+  2. 以科学的方式详细描述图像所展示的内容。
+  3. 批判性地分析图像内容是否与给定的图注一致：
 
 {caption}
 
-  4. We also have references in the main text that mention the figure:
+  4. 我们还有正文中提到该图的引用：
 
 {main_text_figrefs}
 
-  5. We have limited pages to present contents:
+  5. 我们展示内容的页面有限：
 
 {reflection_page_info}
 
-You should:
-  - Examine the figure in detail: conclude elements in figures (e.g. name of axis) and describe what information is shown (e.g. the line of loss decreases monotonically but plateaus after X epochs)
-  - Critique the caption: does it accurately describe the figure? Is it too long/short? Does it include a concise takeaway?
-  - Review how well the main text references (figrefs) explain the figure: are they missing? Do they adequately describe the figure's content, context, or purpose?
+你应该：
+  - 详细检查图：总结图中的元素（例如坐标轴名称）并描述展示了什么信息（例如损失曲线单调递减但在 X 个 epoch 后趋于平稳）
+  - 评价图注：它是否准确描述了图？太长/太短？是否包含了简洁的要点？
+  - 审查正文引用（figrefs）对图的解释程度：是否缺失？是否充分描述了图的内容、背景或目的？
 
-After considering all of the above, you should carefully evaluate:
-  - Given the current page limit, does this image and its relevant text add significant value to the paper's scientific argument?
-  - Given the current page limit, is this image too sparse in information? Should it be combined with other figures in the main text?
-  - Does this figure contain subfigures?
-  - Is this figure not very informative? For example, some figures may show bars with very similar heights that are difficult to distinguish, or present data in a way that does not effectively communicate meaningful differences or patterns.
+在考虑以上所有因素后，你应该仔细评估：
+  - 考虑到当前的页数限制，此图像及其相关文本是否为论文的科学论证增加了显著价值？
+  - 考虑到当前的页数限制，此图像是否信息过于稀疏？是否应与其他正文中的图合并？
+  - 此图是否包含子图？
+  - 此图是否信息量不足？例如，一些图可能显示高度非常相似、难以区分的条形，或者以无法有效传达有意义差异或模式的方式呈现数据。
 
-Finally, respond in the following format:
+最后，请按照以下格式回复：
 
 THOUGHT:
 <THOUGHT>
@@ -110,30 +110,30 @@ REVIEW JSON:
 ```json
 <JSON>
 ```
-In <JSON>, provide the review in JSON format with the following fields in the order:
-- "Img_description": "<Describe the figure's contents here>"
-- "Img_review": "<Your analysis of the figure itself, including any suggestions for improvement>"
-- "Caption_review": "<Your assessment of how well the caption matches the figure and any suggestions>"
-- "Figrefs_review": "<Your thoughts on whether the main text references adequately describe or integrate the figure>"
-- "Overall_comments": "<Your thoughts on whether this figure adds significant value to the paper. Should it be moved to the appendix or not?>"
-- "Containing_sub_figures": "<Does this figure contain multiple sub-figures? Do you think the information in this figure is dense? If not, would you suggest combining it with other figures in the main text? If it contains subplots, are their sizes and positions nicely aligned? If not, describe the issues.>"
-- "Informative_review": "<Is this figure informative? Does it effectively communicate meaningful differences or patterns? Or does it show data in a way that makes it difficult to distinguish differences (e.g. bars with very similar heights)?>"
+在 <JSON> 中，按顺序以 JSON 格式提供审阅，包含以下字段：
+- "Img_description": "<在此描述图的内容>"
+- "Img_review": "<你对图本身的分析，包括任何改进建议>"
+- "Caption_review": "<你对图注与图匹配程度的评估以及任何建议>"
+- "Figrefs_review": "<你对正文引用是否充分描述或整合了该图的看法>"
+- "Overall_comments": "<你对此图是否为论文增加了显著价值的看法。是否应该移至附录？>"
+- "Containing_sub_figures": "<此图是否包含多个子图？你认为此图中的信息是否密集？如果不密集，是否建议将其与正文中的其他图合并？如果包含子图，它们的大小和位置是否良好对齐？如果没有，请描述问题。>"
+- "Informative_review": "<此图是否信息丰富？它是否有效传达了有意义的差异或模式？还是以难以区分差异的方式显示数据（例如条形高度非常相似）？>"
 
-In <THOUGHT>, first, thoroughly reason through your observations, analysis of alignment, and any suggested improvements. It is okay to be very long.
-Then provide your final structured output in <JSON>.
-Make sure the JSON is valid and properly formatted, as it will be parsed automatically."""
+在 <THOUGHT> 中，首先全面推理你的观察、对齐分析以及任何建议的改进。可以写得很长。
+然后在 <JSON> 中提供最终的结构化输出。
+确保 JSON 有效且格式正确，因为它将被自动解析。"""
 
 img_review_prompt = """
 
-You will be given an image via the vision API. As a careful scientist reviewer, your task is to:
-  1. Examine the provided image closely.
-  2. Describe in detail what the image shows in a scientific manner.
+你将通过视觉 API 获得一张图像。作为一名严谨的科学家审阅人，你的任务是：
+  1. 仔细检查提供的图像。
+  2. 以科学的方式详细描述图像所展示的内容。
 
-You should:
-  - Examine the figure in detail: conclude elements in figures (e.g. name of axis) and describe what information is shown (e.g. the line of loss decreases monotonically but plateaus after X epochs)
-  - Suggest any potential improvements or issues in the figure itself (e.g., missing legend, unclear labeling, no meaningful conclusion, mismatch with what the caption claims).
+你应该：
+  - 详细检查图：总结图中的元素（例如坐标轴名称）并描述展示了什么信息（例如损失曲线单调递减但在 X 个 epoch 后趋于平稳）
+  - 对图本身提出任何潜在的改进或问题（例如，缺少图例、标签不清晰、没有有意义的结论、与图注声称的内容不匹配）。
 
-Finally, respond in the following format:
+最后，请按照以下格式回复：
 
 THOUGHT:
 <THOUGHT>
@@ -142,13 +142,13 @@ REVIEW JSON:
 ```json
 <JSON>
 ```
-In <JSON>, provide the review in JSON format with the following fields in the order:
-- "Img_description": "<Describe the figure's contents here>"
-- "Img_review": "<Your analysis of the figure itself, including any suggestions for improvement>"
+在 <JSON> 中，按顺序以 JSON 格式提供审阅，包含以下字段：
+- "Img_description": "<在此描述图的内容>"
+- "Img_review": "<你对图本身的分析，包括任何改进建议>"
 
-In <THOUGHT>, first, thoroughly reason through your observations, analysis of alignment, and any suggested improvements. It is okay to be very long.
-Then provide your final structured output in <JSON>.
-Make sure the JSON is valid and properly formatted, as it will be parsed automatically."""
+在 <THOUGHT> 中，首先全面推理你的观察、对齐分析以及任何建议的改进。可以写得很长。
+然后在 <JSON> 中提供最终的结构化输出。
+确保 JSON 有效且格式正确，因为它将被自动解析。"""
 
 
 def extract_figure_screenshots(
@@ -400,11 +400,11 @@ def detect_duplicate_figures(client, client_model, pdf_path):
         {
             "role": "system",
             "content": (
-                "You are an expert at identifying duplicate or highly similar images. "
-                "Please analyze these images and determine if they are duplicates or variations of the same visualization. "
-                "Response format: reasoning, followed by `Duplicate figures: <list of duplicate figure names>`."
-                "Make sure you use the exact figure names (e.g. Figure 1, Figure 2b, etc.) as they appear in the paper."
-                "If you find no duplicates, respond with `No duplicates found`."
+                "你是一位识别重复或高度相似图像的专家。"
+                "请分析这些图像并判断它们是重复的还是同一可视化的变体。"
+                "回复格式：推理，然后在 `重复图: <重复图名称列表>` 中列出。"
+                "确保使用论文中出现的准确图名称（例如 Figure 1、Figure 2b 等）。"
+                "如果没有发现重复，请回复 `未发现重复`。"
             ),
         },
         {
@@ -412,7 +412,7 @@ def detect_duplicate_figures(client, client_model, pdf_path):
             "content": [
                 {
                     "type": "text",
-                    "text": "Are any of these images duplicates or highly similar? If so, please identify which ones are similar and explain why. Focus on content similarity, not just visual style.",
+                    "text": "这些图像中是否有重复或高度相似的？如果有，请指出哪些是相似的并解释原因。关注内容相似性，而不仅仅是视觉风格。",
                 }
             ],
         },

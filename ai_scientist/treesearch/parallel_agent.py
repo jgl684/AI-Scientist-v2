@@ -453,11 +453,9 @@ class MinimalAgent:
     def _draft(self) -> Node:
         prompt: Any = {
             "Introduction": (
-                "You are an AI researcher who is looking to publish a paper that will contribute significantly to the field."
-                "Your first task is to write a python code to implement a solid baseline based on your research idea provided below, "
-                "from data preparation to model training, as well as evaluation and visualization. "
-                "Focus on getting a simple but working implementation first, before any sophisticated improvements. "
-                "We will explore more advanced variations in later stages."
+                "你是一位希望发表有重大贡献论文的AI研究员。你的第一个任务是编写Python代码，根据下面提供的研究想法实现一个可靠的基线，从数据准备到模型训练，以及评估和可视化。"
+                "首先专注于获得一个简单但可工作的实现，然后再进行复杂的改进。"
+                "我们将在后续阶段探索更高级的变体。"
             ),
             "Research idea": self.task_desc,
             "Memory": self.memory_summary if self.memory_summary else "",
@@ -494,9 +492,9 @@ class MinimalAgent:
     def _debug(self, parent_node: Node) -> Node:
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. Your previous code for research experiment had a bug, so based on the information below, you should revise it in order to fix this bug. "
-                "Your response should be an implementation outline in natural language,"
-                " followed by a single markdown code block which implements the bugfix/solution."
+                "你是一位经验丰富的AI研究员。你之前的研究实验代码有一个bug，请根据以下信息修改代码以修复这个bug。"
+                "你的回复应该先是一个自然语言的实现概要，"
+                "然后是一个包含bug修复/解决方案的markdown代码块。"
             ),
             "Research idea": self.task_desc,
             "Previous (buggy) implementation": wrap_code(parent_node.code),
@@ -523,8 +521,8 @@ class MinimalAgent:
     def _improve(self, parent_node: Node) -> Node:
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. You are provided with a previously developed "
-                "implementation. Your task is to improve it based on the current experimental stage."
+                "你是一位经验丰富的AI研究员。你会获得一个之前开发的"
+                "实现。你的任务是根据当前的实验阶段对其进行改进。"
             ),
             "Research idea": self.task_desc,
             "Memory": self.memory_summary if self.memory_summary else "",
@@ -559,8 +557,8 @@ class MinimalAgent:
     ):
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. You are provided with a previously developed "
-                "baseline implementation. Your task is to implement hyperparameter tuning for the following idea: "
+                "你是一位经验丰富的AI研究员。你会获得一个之前开发的"
+                "基线实现。你的任务是为以下想法实现超参数调优："
                 + hyperparam_idea.name
                 + ". "
                 + hyperparam_idea.description
@@ -605,8 +603,8 @@ class MinimalAgent:
     def _generate_ablation_node(self, parent_node: Node, ablation_idea: AblationIdea):
         prompt: Any = {
             "Introduction": (
-                "You are an experienced AI researcher. You are provided with a previously developed "
-                "baseline implementation. Your task is to implement the ablation study for the following idea: "
+                "你是一位经验丰富的AI研究员。你会获得一个之前开发的"
+                "基线实现。你的任务是为以下想法实现消融研究："
                 + ablation_idea.name
                 + ". "
                 + ablation_idea.description
@@ -689,9 +687,9 @@ class MinimalAgent:
 
         prompt = {
             "Introduction": (
-                "You are an experienced AI researcher. "
-                "You have written code for your research experiment and now need to evaluate the output of the code execution. "
-                "Analyze the execution output, determine if there were any bugs, and provide a summary of the findings. "
+                "你是一位经验丰富的AI研究员。"
+                "你已经为研究实验编写了代码，现在需要评估代码执行的输出。"
+                "请分析执行输出，判断是否存在bug，并总结发现。"
             ),
             "Research idea": self.task_desc,
             "Implementation": wrap_code(node.code),
@@ -839,13 +837,13 @@ class MinimalAgent:
             plot_analyses += f"plot {i+1}: {plot_analysis['analysis']}\n"
 
         determine_prompt = {
-            "Introduction": "You are an AI researcher analyzing experiment results. Based on the plot analyses and feedback, determine which datasets are successfully tested. Return reasoning and the dataset names that are successfully executed, or an empty string if no datasets are successfully executed.",
+            "Introduction": "你是一位分析实验结果的AI研究员。根据图表分析和反馈，判断哪些数据集已成功测试。返回推理过程和成功执行的数据集名称，如果没有成功执行的数据集则返回空字符串。",
             "Plot analyses": plot_analyses,
             "VLM feedback summary": node.vlm_feedback_summary,
             "Original plotting code": node.plot_code,
             "Response format": (
-                "Your response should start with 'REASONING: <reasoning>' to think about the plot analysis and feedback in the first line."
-                "In the second line, you should have a list of dataset names that are successfully executed, starting with 'SUCCESSFULLY_TESTED_DATASETS: <list_datasets_successfully_tested>', "
+                "你的回复第一行应以'REASONING: ...'开头，思考图表分析和反馈。"
+                "第二行应列出成功执行的数据集名称，以'SUCCESSFULLY_TESTED_DATASETS: ...'开头。"
             ),
         }
 
@@ -916,11 +914,11 @@ class MinimalAgent:
             # select 10 plots to analyze
             prompt_select_plots = {
                 "Introduction": (
-                    "You are an experienced AI researcher analyzing experimental results. "
-                    "You have been provided with plots from a machine learning experiment. "
-                    "Please select 10 most relevant plots to analyze. "
-                    "For similar plots (e.g. generated samples at each epoch), select only at most 5 plots at a suitable interval of epochs."
-                    "Format your response as a list of plot paths, where each plot path includes the full path to the plot file."
+                    "你是一位分析实验结果的AI研究员。"
+                    "你收到了一些机器学习实验的图表。"
+                    "请选择10张最相关的图表进行分析。"
+                    "对于相似的图表（例如每个epoch的生成样本），最多选择5张以合适的epoch间隔分布。"
+                    "将回复格式化为图表路径列表，每个路径包含图表文件的完整路径。"
                 ),
                 "Plot paths": node.plot_paths,
             }
@@ -984,14 +982,14 @@ class MinimalAgent:
             {
                 "type": "text",
                 "text": (
-                    "You are an experienced AI researcher analyzing experimental results. "
-                    "You have been provided with plots from a machine learning experiment. "
-                    f"This experiment is based on the following research idea: {self.task_desc}"
-                    "Please analyze these plots and provide detailed insights about the results. "
-                    "If you don't receive any plots, say 'No plots received'. "
-                    "Never make up plot analysis. "
-                    "Please return the analyzes with strict order of uploaded images, but DO NOT include any word "
-                    "like 'the first plot'."
+                    "你是一位分析实验结果的AI研究员。"
+                    "你收到了一些机器学习实验的图表。"
+                    f"这个实验基于以下研究想法：{self.task_desc}"
+                    "请分析这些图表，并提供关于结果的详细洞察。"
+                    "如果你没有收到任何图表，请说'没有收到图表'。"
+                    "绝不要编造图表分析。"
+                    "请按上传图片的顺序返回分析，但不要包含"
+                    "'第一张图'之类的词语。"
                 ),
             }
         ] + [
@@ -1036,8 +1034,8 @@ class MinimalAgent:
         """Generate a summary of the node's experimental findings"""
         summary_prompt = {
             "Introduction": (
-                "You are an AI researcher analyzing experimental results. "
-                "Please summarize the findings from this experiment iteration."
+                "你是一位分析实验结果的AI研究员。"
+                "请总结这次实验迭代的发现。"
             ),
             "Research idea": self.task_desc,
             "Implementation": wrap_code(node.code),
@@ -1195,9 +1193,9 @@ class ParallelAgent:
         """Define eval metric to be used across all experiments"""
         prompt = {
             "Introduction": (
-                "You are an AI researcher setting up experiments. "
-                "Please propose meaningful evaluation metrics that will help analyze "
-                "the performance and characteristics of solutions for this research task."
+                "你是一位正在设置实验的AI研究员。"
+                "请提出有意义的评估指标，以帮助分析"
+                "此研究任务解决方案的性能和特征。"
             ),
             "Research idea": self.task_desc,
             "Instructions": [
@@ -1554,8 +1552,8 @@ class ParallelAgent:
                     # Call LLM to parse data files and extract metrics
                     parse_metrics_prompt = {
                         "Introduction": (
-                            "You are an AI researcher analyzing experimental results stored in numpy files. "
-                            "Write code to load and analyze the metrics from experiment_data.npy."
+                            "你是一位分析存储在numpy文件中的实验结果的AI研究员。"
+                            "请编写代码加载并分析experiment_data.npy中的指标。"
                         ),
                         "Context": [
                             "Original Code: " + child_node.code,
@@ -1606,7 +1604,7 @@ class ParallelAgent:
                     if metrics_exec_result.exc_type is None:
                         # Extract metrics from the execution output
                         metrics_prompt = {
-                            "Introduction": "Parse the metrics from the execution output. You only need the final or best value of a metric for each dataset, not the entire list during training.",
+                            "Introduction": "从执行输出中解析指标。你只需要每个数据集的最终值或最佳值，不需要训练过程中的完整列表。",
                             "Execution Output": metrics_exec_result.term_out,
                         }
                         print(
@@ -1803,12 +1801,12 @@ class ParallelAgent:
 
         hyperparam_tuning_prompt = {
             "Introduction": (
-                "You are an AI researcher conducting hyperparameter tuning for baseline experiments. "
-                "Based on the current implementation and previous hyperparameter tuning attempts (if any), "
-                "propose ONE new hyperparameter tuning idea to see if it improves the performance."
-                "You should first check if simply training longer (more epochs) improves the performance."
-                "Then try tuning common hyperparameters such as learning rate, batch size, etc."
-                "Only propose algorithm-specific and/or model-specific hyperparameters after you have tried the above."
+                "你是一位正在进行基线实验超参数调优的AI研究员。"
+                "基于当前实现和之前的超参数调优尝试（如有），"
+                "提出一个新超参数调优想法来看看是否能提高性能。"
+                "首先应检查简单增加训练轮数是否能提高性能。"
+                "然后尝试调整常见超参数，如学习率、批次大小等。"
+                "只有在你尝试了以上方法后，才能提出算法/模型特定的超参数。"
             ),
             "Base code you are working on": wrap_code(self.best_stage1_node.code),
             "Previous Hyperparam Tuning Attempts": {
@@ -1865,9 +1863,9 @@ class ParallelAgent:
 
         ablation_prompt = {
             "Introduction": (
-                "You are an AI researcher conducting ablation studies. "
-                "Based on the current implementation and previous ablations (if any), "
-                "propose ONE new ablation study that tests a different aspect of the model."
+                "你是一位正在进行消融研究的AI研究员。"
+                "基于当前实现和之前的消融实验（如有），"
+                "提出一个新的消融研究来测试模型的不同方面。"
             ),
             "Base code you are working on": wrap_code(self.best_stage3_node.code),
             "Previous Ablations": {
@@ -2294,10 +2292,10 @@ class ParallelAgent:
         # add instruction for format
         plotting_prompt = {
             "Introduction": (
-                "You are an expert in data visualization and plotting. "
-                "You are given a set of evaluation results and the code that was used to plot them. "
-                "Your task is to write a new plotting code that aggregate the results "
-                "e.g. for example, by adding mean values and standard error bars to the plots."
+                "你是一位数据可视化和绘图方面的专家。"
+                "你会获得一组评估结果和用于绘制它们的代码。"
+                "你的任务是编写新的绘图代码来汇总结果，"
+                "例如在图表中添加平均值和标准误差条。"
             ),
             "Instructions": {},
         }

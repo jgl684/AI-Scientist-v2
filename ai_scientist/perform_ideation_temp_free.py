@@ -25,16 +25,16 @@ tools = [
     semantic_scholar_tool,
     {
         "name": "FinalizeIdea",
-        "description": """Finalize your idea by providing the idea details.
+        "description": """通过提供想法详情来最终确定你的想法。
 
-The IDEA JSON should include the following fields:
-- "Name": A short descriptor of the idea. Lowercase, no spaces, underscores allowed.
-- "Title": A catchy and informative title for the proposal.
-- "Short Hypothesis": A concise statement of the main hypothesis or research question. Clarify the need for this specific direction, ensure this is the best setting to investigate this idea, and there are not obvious other simpler ways to answer the question.
-- "Related Work": A brief discussion of the most relevant related work and how the proposal clearly distinguishes from it, and is not a trivial extension.
-- "Abstract": An abstract that summarizes the proposal in conference format (approximately 250 words).
-- "Experiments": A list of experiments that would be conducted to validate the proposal. Ensure these are simple and feasible. Be specific in exactly how you would test the hypothesis, and detail precise algorithmic changes. Include the evaluation metrics you would use.
-- "Risk Factors and Limitations": A list of potential risks and limitations of the proposal.""",
+IDEA JSON 应包含以下字段：
+- "Name": 想法的简短描述。小写，无空格，可使用下划线。
+- "Title": 一个吸引人且信息丰富的提案标题。
+- "Short Hypothesis": 主假设或研究问题的简洁陈述。阐明此特定方向的必要性，确保这是研究此想法的最佳设置，并且没有其他明显更简单的方法来回答该问题。
+- "Related Work": 对最相关的相关工作的简要讨论，以及提案如何与其明显区分，而非简单的扩展。
+- "Abstract": 以会议格式总结提案的摘要（约 250 词）。
+- "Experiments": 为验证提案而需要进行的一系列实验。确保这些实验简单且可行。具体说明你将如何测试假设，并详细描述精确的算法变更。包括你将使用的评估指标。
+- "Risk Factors and Limitations": 提案的潜在风险和局限性列表。""",
     },
 ]
 
@@ -58,23 +58,23 @@ tool_names = [
 ]
 tool_names_str = ", ".join(tool_names)
 
-system_prompt = f"""You are an experienced AI researcher who aims to propose high-impact research ideas resembling exciting grant proposals. Feel free to propose any novel ideas or experiments; make sure they are novel. Be very creative and think out of the box. Each proposal should stem from a simple and elegant question, observation, or hypothesis about the topic. For example, they could involve very interesting and simple interventions or investigations that explore new possibilities or challenge existing assumptions. Clearly clarify how the proposal distinguishes from the existing literature.
+system_prompt = f"""你是一位经验丰富的AI研究员，旨在提出类似于激动人心的基金申请书的高影响力研究想法。请自由提出任何新颖的想法或实验；确保它们是新颖的。要有创造力，跳出思维框架。每个提案应源于关于该主题的一个简单而优雅的问题、观察或假设。例如，它们可以涉及非常有趣且简单的干预或调查，探索新的可能性或挑战现有假设。请清楚说明该提案如何与现有文献区分开来。
 
-Ensure that the proposal does not require resources beyond what an academic lab could afford. These proposals should lead to papers that are publishable at top ML conferences.
+确保提案不需要超出学术实验室负担能力的资源。这些提案应能产生可在顶级机器学习会议上发表的论文。
 
-You have access to the following tools:
+你可以使用以下工具：
 
 {tool_descriptions}
 
-Respond in the following format:
+请按以下格式回复：
 
 ACTION:
-<The action to take, exactly one of {tool_names_str}>
+<要采取的行动，必须是 {tool_names_str} 之一>
 
 ARGUMENTS:
-<If ACTION is "SearchSemanticScholar", provide the search query as {{"query": "your search query"}}. If ACTION is "FinalizeIdea", provide the idea details as {{"idea": {{ ... }}}} with the IDEA JSON specified below.>
+<如果 ACTION 是 "SearchSemanticScholar"，请提供搜索查询 {{"query": "你的搜索查询"}}。如果 ACTION 是 "FinalizeIdea"，请提供想法详情 {{"idea": {{ ... }}}} 以及下面指定的 IDEA JSON。>
 
-If you choose to finalize your idea, provide the IDEA JSON in the arguments:
+如果你选择最终确定你的想法，请在参数中提供 IDEA JSON：
 
 IDEA JSON:
 ```json
@@ -91,35 +91,35 @@ IDEA JSON:
 }}
 ```
 
-Ensure the JSON is properly formatted for automatic parsing.
+确保 JSON 格式正确，以便自动解析。
 
-Note: You should perform at least one literature search before finalizing your idea to ensure it is well-informed by existing research."""
+注意：在最终确定你的想法之前，你应该至少进行一次文献搜索，以确保你的想法充分借鉴了现有研究。"""
 
 # Define the initial idea generation prompt
 idea_generation_prompt = """{workshop_description}
 
-Here are the proposals that you have already generated:
+以下是你已经生成的提案：
 
 '''
 {prev_ideas_string}
 '''
 
-Begin by generating an interestingly new high-level research proposal that differs from what you have previously proposed.
+开始生成一个有趣且新颖的高层次研究提案，要与之前提出的提案不同。
 """
 
 # Define the reflection prompt
-idea_reflection_prompt = """Round {current_round}/{num_reflections}.
+idea_reflection_prompt = """第 {current_round}/{num_reflections} 轮。
 
-In your thoughts, first carefully consider the quality, novelty, and feasibility of the proposal you just created.
-Include any other factors that you think are important in evaluating the proposal.
-Ensure the proposal is clear and concise, and the JSON is in the correct format.
-Do not make things overly complicated.
-In the next attempt, try to refine and improve your proposal.
-Stick to the spirit of the original idea unless there are glaring issues.
+在你的思考中，首先仔细考虑你刚刚创建的提案的质量、新颖性和可行性。
+纳入你认为对评估提案重要的任何其他因素。
+确保提案清晰简洁，且 JSON 格式正确。
+不要让事情过于复杂。
+在下一轮尝试中，尝试改进和完善你的提案。
+除非有明显的严重问题，否则应坚持原始想法的核心精神。
 
-If you have new information from tools, such as literature search results, incorporate them into your reflection and refine your proposal accordingly.
+如果你从工具中获得了新的信息，例如文献搜索结果，请将其纳入你的反思中，并相应地完善你的提案。
 
-Results from your last action (if any):
+上一次操作的结果（如有）：
 
 {last_tool_results}
 """
@@ -141,13 +141,13 @@ def generate_temp_free_idea(
             idea_str_content = json.load(f)
             for idea in idea_str_content:
                 idea_str_archive.append(json.dumps(idea))
-            print(f"Loaded {len(idea_str_archive)} ideas from {idea_fname}")
+            print(f"已加载 {len(idea_str_archive)} 个创意，来自 {idea_fname}")
     else:
-        print(f"No ideas found in {idea_fname}. Starting from scratch.")
+        print(f"在 {idea_fname} 中未找到创意。从头开始。")
 
     for gen_idx in range(max_num_generations):
         print()
-        print(f"Generating proposal {gen_idx + 1}/{max_num_generations}")
+        print(f"正在生成提案 {gen_idx + 1}/{max_num_generations}")
         try:
             prev_ideas_string = "\n\n".join(idea_str_archive)
 
@@ -196,8 +196,8 @@ def generate_temp_free_idea(
 
                     action = action_match.group(1).strip()
                     arguments_text = arguments_match.group(1).strip()
-                    print(f"Action: {action}")
-                    print(f"Arguments: {arguments_text}")
+                    print(f"动作: {action}")
+                    print(f"参数: {arguments_text}")
 
                     # If arguments are wrapped in ```json blocks, extract the content
                     if arguments_text.startswith("```json"):
@@ -232,19 +232,19 @@ def generate_temp_free_idea(
 
                             # Append the idea to the archive
                             idea_str_archive.append(json.dumps(idea))
-                            print(f"Proposal finalized: {idea}")
+                            print(f"提案已完成: {idea}")
                             idea_finalized = True
                             break
                         except json.JSONDecodeError:
                             raise ValueError("Invalid arguments JSON for FinalizeIdea.")
                     else:
                         print(
-                            "Invalid action. Please specify one of the available tools."
+                            "无效的动作。请指定一个可用工具。"
                         )
-                        print(f"Available actions are: {tool_names_str}")
+                        print(f"可用的动作有: {tool_names_str}")
                 except Exception as e:
                     print(
-                        f"Failed to parse LLM response. Response text:\n{response_text}"
+                        f"无法解析 LLM 回复。回复文本:\n{response_text}"
                     )
                     traceback.print_exc()
                     break  # Exit the loop if parsing fails
@@ -253,7 +253,7 @@ def generate_temp_free_idea(
                 continue  # Move to the next idea
 
         except Exception as e:
-            print("Failed to generate proposal:")
+            print("生成提案失败:")
             traceback.print_exc()
             continue
 
@@ -262,7 +262,7 @@ def generate_temp_free_idea(
 
     with open(idea_fname, "w") as f:
         json.dump(ideas, f, indent=4)
-    print(f"Stored {len(ideas)} ideas in {idea_fname}")
+    print(f"已将 {len(ideas)} 个创意保存至 {idea_fname}")
     return ideas
 
 
@@ -302,12 +302,12 @@ if __name__ == "__main__":
 
     with open(args.workshop_file, "r") as f:
         workshop_description = f.read()
-    print(f"Using workshop description from {args.workshop_file} for idea generation.")
-    print(f"Workshop description:\n{workshop_description}")
+    print(f"使用来自 {args.workshop_file} 的研讨会描述进行创意生成。")
+    print(f"研讨会描述:\n{workshop_description}")
 
     # Create output filename by replacing .md extension with .json
     idea_fname = args.workshop_file.replace(".md", ".json")
-    print("Starting idea generation for", idea_fname)
+    print("开始为", idea_fname, "生成创意")
     ideas = generate_temp_free_idea(
         idea_fname=idea_fname,
         client=client,
@@ -316,4 +316,4 @@ if __name__ == "__main__":
         max_num_generations=args.max_num_generations,
         num_reflections=args.num_reflections,
     )
-    print(f"{args.workshop_file} generated {len(ideas)} ideas.")
+    print(f"{args.workshop_file} 已生成 {len(ideas)} 个创意。")

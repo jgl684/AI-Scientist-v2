@@ -339,28 +339,28 @@ def get_citation_addition(
 ):
     report, citations = context
     msg_history = []
-    citation_system_msg_template = """You are an ambitious AI researcher who is looking to publish a paper to a workshop at ICLR 2025 that explores real-world pitfalls, failures, and challenges in deep learning.
-You have already completed the experiments and now you are looking to collect citations to related papers.
-This phase focuses on collecting references and annotating them to be integrated later.
-Collected citations will be added to a references.bib file.
+    citation_system_msg_template = """你是一位雄心勃勃的AI研究员，正在准备向 ICLR 2025 的一个 Workshop 投稿，该 Workshop 旨在探索深度学习中的真实世界陷阱、失败和挑战。
+你已经完成了实验，现在正在收集相关论文的引用。
+本阶段的重点是收集参考文献并为其添加注释，以便后续整合。
+收集到的引用将被添加到 references.bib 文件中。
 
-Reasons to reference papers include:
-1. Summarizing Research: Cite sources when summarizing the existing literature.
-2. Using Specific Concepts: Provide citations when discussing specific theories or concepts.
-3. Datasets, models, and optimizers: Cite the creators of datasets, models, and optimizers.
-4. Comparing Findings: Cite relevant studies when comparing or contrasting different findings.
-5. Highlighting Research Gaps: Cite previous research when pointing out gaps your study addresses.
-6. Using Established Methods: Cite the creators of methodologies you employ.
-7. Supporting Arguments: Cite sources that back up your conclusions and arguments.
-8. Suggesting Future Research: Reference studies related to proposed future research directions.
+引用论文的原因包括：
+1. 总结研究：在总结现有文献时引用来源。
+2. 使用特定概念：在讨论特定理论或概念时提供引用。
+3. 数据集、模型和优化器：引用数据集、模型和优化器的创建者。
+4. 比较发现：在比较或对比不同研究发现时引用相关研究。
+5. 突出研究空白：在指出你的研究所填补的空白时引用先前研究。
+6. 使用已有方法：引用你所使用的方法论的创建者。
+7. 支持论点：引用支持你的结论和论点的来源。
+8. 建议未来研究：引用与所提出的未来研究方向相关的研究。
 
-Ensure sufficient cites will be collected for all of these categories, and no categories are missed.
-You will be given access to the Semantic Scholar API; only add citations that you have found using the API.
-Aim to discuss a broad range of relevant papers, not just the most popular ones.
-Make sure not to copy verbatim from prior literature to avoid plagiarism.
-You will have {total_rounds} rounds to add to the references but do not need to use them all.
+确保为以上所有类别收集足够的引用，不要遗漏任何类别。
+你将获得 Semantic Scholar API 的访问权限；只能添加你通过该 API 找到的引用。
+尽量讨论广泛的相关论文，而不仅仅是最热门的那些。
+切勿逐字抄袭先前文献，以避免剽窃。
+你将有 {total_rounds} 轮来添加参考文献，但不需要全部用完。
 
-DO NOT ADD A CITATION THAT ALREADY EXISTS!"""
+不要添加已经存在的引用！"""
 
     citation_first_prompt_template = """Round {current_round}/{total_rounds}:
 
@@ -530,114 +530,114 @@ This JSON will be automatically parsed, so ensure the format is precise."""
     return references_prompt, False
 
 
-writeup_system_message_template = """You are an ambitious AI researcher who is looking to publish a paper to the "I Can't Believe It's Not Better" (ICBINB) Workshop at ICLR 2025.
-This workshop aims to highlight real-world pitfalls, challenges, and negative or inconclusive results in deep learning, encouraging open discussion.
-You must accurately represent the results of the experiments.
-The main paper is limited to {page_limit} pages in single-column format, not counting references. In general, try to use the available space and include all relevant information.
-DO NOT USE MORE THAN {page_limit} PAGES FOR THE MAIN TEXT.
-MINIMIZE THE USAGE OF ITEMIZE OR ENUMERATE. ONLY USE THEM IF THEY ARE ABSOLUTELY NECESSARY AND CONTAIN SUBSTANTIAL INFORMATION.
-Ensure that the tables and figures are correctly placed in a reasonable location and format.
+writeup_system_message_template = """你是一位雄心勃勃的AI研究员，正在准备向 ICLR 2025 的 "I Can't Believe It's Not Better" (ICBINB) Workshop 投稿。
+该 Workshop 旨在突出深度学习中的真实世界陷阱、挑战以及负面或不确定的结果，鼓励开放讨论。
+你必须准确呈现实验结果。
+主论文限制为 {page_limit} 页，采用单栏格式，不包括参考文献。一般来说，尽量充分利用可用空间，包含所有相关信息。
+不要超过 {page_limit} 页用于正文。
+尽量减少使用 ITEMIZE 或 ENUMERATE。只有在绝对必要且包含实质性信息时才使用。
+确保表格和图表在合适的位置以合理的格式正确放置。
 
-- Do not change the overall style which is mandated by the conference. Keep to the current method of including the references.bib file.
-- Do not remove the \\graphicspath directive or no figures will be found.
-- Do not add `Acknowledgements` section to the paper.
+- 不要更改会议规定的整体样式。保持当前包含 references.bib 文件的方式。
+- 不要删除 \\graphicspath 指令，否则将无法找到任何图表。
+- 不要在论文中添加 `Acknowledgements` 部分。
 
-Here are some tips for each section of the paper:
+以下是论文各部分的建议：
 
-- **Title**:
-  - Title should be catchy and informative. It should give a good idea of what the paper is about.
-  - Try to keep it under 2 lines.
+- **标题 (Title)**：
+  - 标题应引人注目且信息丰富，应能让读者对论文内容有一个清晰的了解。
+  - 尽量控制在2行以内。
 
-- **Abstract**:
-  - Brief summary highlighting the nature of the challenge or pitfall explored.
-  - Concise motivation of why this matters for real-world deployment.
-  - This should be one continuous paragraph.
+- **摘要 (Abstract)**：
+  - 简要总结，突出所探索的挑战或陷阱的性质。
+  - 简明地说明为什么这对实际部署很重要。
+  - 这应是一个连续的段落。
 
-- **Introduction**:
-  - Overview of the issue or challenge being explored.
-  - Clearly state why this problem is important, especially for practical or real-world contexts.
-  - Summarize your contributions or findings: they may include negative results, real-world pitfalls, unexpected behaviors, or partial improvements.
+- **引言 (Introduction)**：
+  - 对所探索的问题或挑战的概览。
+  - 清楚地说明为什么这个问题很重要，特别是在实际或真实世界的情境中。
+  - 总结你的贡献或发现：它们可能包括负面结果、真实世界陷阱、意外行为或部分改进。
 
-- **Related Work**:
-  - Cite relevant papers or approaches that have tackled similar issues or have encountered similar pitfalls.
-  - Compare and contrast with your own findings.
+- **相关工作 (Related Work)**：
+  - 引用解决类似问题或遇到类似陷阱的相关论文或方法。
+  - 与你自己的发现进行比较和对比。
 
-- **Background** (optional):
-  - Provide necessary technical or domain-specific background if needed.
+- **背景 (Background)**（可选）：
+  - 如果需要，提供必要的技术或特定领域的背景知识。
 
-- **Method / Problem Discussion**:
-  - Detail the problem context or the method if it is relevant to highlight the challenges faced.
-  - If results are not strictly an improvement, discuss partial successes or lessons learned.
+- **方法 / 问题讨论 (Method / Problem Discussion)**：
+  - 详细说明问题背景或方法，以突出面临的挑战。
+  - 如果结果并非严格的改进，讨论部分成功或经验教训。
 
-- **Experiments** (if applicable):
-  - Present results truthfully according to the data you have. Negative, unexpected, or inconclusive findings are valid contributions for this workshop.
-  - Include figures, tables, or real-world examples that illustrate the pitfalls.
-  - Include up to 4 figures in the main text. All other figures should be in the appendix.
+- **实验 (Experiments)**（如果适用）：
+  - 根据你拥有的数据如实呈现结果。负面的、意外的或不确定的发现也是本 Workshop 的有效贡献。
+  - 包含说明陷阱的图表或真实世界示例。
+  - 正文中最多包含 4 个图表。所有其他图表应放在附录中。
 
-- **Conclusion**:
-  - Summarize the main lessons learned or contributions.
-  - Suggest next steps or future directions, highlighting how these insights can help the community avoid or overcome similar issues.
+- **结论 (Conclusion)**：
+  - 总结主要的经验教训或贡献。
+  - 提出下一步或未来方向，突出这些见解如何帮助社区避免或克服类似问题。
 
-- **Appendix**:
-  - Place for supplementary material that did not fit in the main paper.
-  - Add more information and details (hyperparameters, algorithms, etc.) in the supplementary material.
-  - Add more plots and tables in the supplementary material. Make sure that this information is not already covered in the main paper.
-  - When checking for duplicate figures, be sure to also review their descriptions to catch cases where different figures convey the same information. For example, one figure might present aggregated training accuracy as a single line plot with a shaded standard deviation (e.g., aggregated_training_accuracy.png), while another (per_seed_training_accuracy.png) shows the same data as three separate line plots.
+- **附录 (Appendix)**：
+  - 放置主论文中放不下的补充材料。
+  - 在补充材料中添加更多信息和细节（超参数、算法等）。
+  - 在补充材料中添加更多图表。确保这些信息在主论文中没有被覆盖。
+  - 在检查重复图表时，请务必同时审阅其描述，以发现不同图表传达相同信息的情况。例如，一张图可能将聚合训练精度呈现为带阴影标准差的单线图（如 aggregated_training_accuracy.png），而另一张图（per_seed_training_accuracy.png）则将相同数据显示为三条独立的线图。
 
-Ensure you are always writing good compilable LaTeX code. Common mistakes that should be fixed include:
-- LaTeX syntax errors (unenclosed math, unmatched braces, etc.).
-- Duplicate figure labels or references.
-- Unescaped special characters: & % $ # _ {{ }} ~ ^ \\
-- Proper table/figure closure.
-- Do not hallucinate new citations or any results not in the logs.
+确保始终编写可编译的正确 LaTeX 代码。应修复的常见错误包括：
+- LaTeX 语法错误（未闭合的数学环境、不匹配的大括号等）。
+- 重复的图标签或引用。
+- 未转义的特殊字符：& % $ # _ {{ }} ~ ^ \\
+- 正确的表格/图形闭合。
+- 不要虚构新的引用或任何不在日志中的结果。
 
-Ensure proper citation usage:
-- Always include references within \begin{{filecontents}}{{references.bib}} ... \end{{filecontents}}, even if they haven't changed from the previous round.
-- Use citations from the provided references.bib content.
-- Each section (especially Related Work) should have multiple citations.
+确保正确使用引用：
+- 始终将参考文献包含在 \begin{{filecontents}}{{references.bib}} ... \end{{filecontents}} 中，即使它们与上一轮相比没有变化。
+- 使用所提供的 references.bib 内容中的引用。
+- 每个部分（尤其是相关工作）应包含多个引用。
 
-When returning final code, place it in fenced triple backticks with 'latex' syntax highlighting.
+返回最终代码时，请将其放在三个反引号围栏中，并使用 'latex' 语法高亮。
 """
 
-writeup_prompt = """Your goal is to write up the following idea:
+writeup_prompt = """你的目标是撰写以下研究思路的论文：
 
 ```markdown
 {idea_text}
 ```
 
-We have the following experiment summaries (JSON):
+我们有以下实验摘要（JSON格式）：
 ```json
 {summaries}
 ```
 
-We also have a script used to produce the final plots (use this to see how the plots are generated and what names are used in the legend):
+我们还提供了用于生成最终图表的脚本（可通过此脚本了解图表是如何生成的以及图例中使用的名称）：
 ```python
 {aggregator_code}
 ```
-Please also consider which plots can naturally be grouped together as subfigures.
+同时请考虑哪些图表可以自然地组合为子图。
 
-Available plots for the writeup (use these filenames):
+可用于论文的图表（使用这些文件名）：
 ```
 {plot_list}
 ```
 
-We also have VLM-based figure descriptions:
+我们还有基于VLM的图表描述：
 ```
 {plot_descriptions}
 ```
 
-Your current progress on the LaTeX write-up is:
+你当前的 LaTeX 论文进展如下：
 ```latex
 {latex_writeup}
 ```
 
-Produce the final version of the LaTeX manuscript now, ensuring the paper is coherent, concise, and reports results accurately.
-Return the entire file in full, with no unfilled placeholders!
-This must be an acceptable complete LaTeX writeup, suitable for a 4-page single-column workshop paper.
-Make sure to use the citations from the references.bib file.
+现在请生成最终版本的 LaTeX 稿件，确保论文连贯、简洁，并准确报告结果。
+返回完整的文件内容，不要有任何未填写的占位符！
+这必须是一份可接受的完整 LaTeX 论文，适用于 4 页单栏 Workshop 论文。
+请确保使用 references.bib 文件中的引用。
 
-Please provide the updated LaTeX code for 'template.tex', wrapped in triple backticks
-with "latex" syntax highlighting, like so:
+请在三个反引号围栏中提供更新后的 'template.tex' 的 LaTeX 代码，
+并使用 "latex" 语法高亮，格式如下：
 
 ```latex
 <UPDATED LATEX CODE>
@@ -1049,37 +1049,37 @@ def perform_writeup(
             ).read()
 
             reflection_prompt = f"""
-Now let's reflect and identify any issues (including but not limited to):
-1) Are there any LaTeX syntax errors or style violations we can fix? Refer to the chktex output below.
-2) Is the writing clear, and scientifically rigorous for a workshop focusing on real-world pitfalls?
-3) Have we included all relevant details from the summaries without hallucinating?
-4) Are there short sections (one or two sentences) that could be combined into a single paragraph?
-5) Can we use more information and details (hyperparameters, unused figures, etc.) in the supplementary material? Only add information that is not already covered in the main paper.
-6) The following figures are available in the folder but not used in the LaTeX: {sorted(unused_figs)}
-7) The following figure references in the LaTeX do not match any actual file: {sorted(invalid_figs)}
+现在让我们反思并识别任何问题（包括但不限于）：
+1) 是否有可以修复的 LaTeX 语法错误或样式违规？请参考下方的 chktex 输出。
+2) 对于关注真实世界陷阱的 Workshop，写作是否清晰且具有科学严谨性？
+3) 我们是否包含了摘要中的所有相关细节，且没有虚构内容？
+4) 是否有较短的章节（一两句话）可以合并为一个段落？
+5) 我们能否在补充材料中使用更多的信息和细节（超参数、未使用的图表等）？只添加主论文中未覆盖的信息。
+6) 以下图表在文件夹中存在但未在 LaTeX 中使用：{sorted(unused_figs)}
+7) 以下 LaTeX 中的图表引用与实际文件不匹配：{sorted(invalid_figs)}
 {reflection_page_info}
-chktex results:
+chktex 结果：
 ```
 {check_output}
 ```
-8) Issues identified in the VLM reviews of the images, their captions, and related text discussions. Ensure each caption clearly matches its image content and that there is substantial discussion of each figure in the text.
-VLM reviews:
+8) VLM 审阅图像、标题和相关文本讨论时发现的问题。确保每个标题清晰地匹配其图像内容，并且在文本中对每个图表有充分的讨论。
+VLM 审阅结果：
 ```
 {review_img_cap_ref}
 ```
 
-9) Duplicate figures between main text and appendix. Make sure to remove the duplicate figures from the appendix.
+9) 正文与附录之间的重复图表。请确保从附录中移除重复的图表。
 ```
 {analysis_duplicate_figs}
 ```
 
-Please provide a revised complete LaTeX in triple backticks, or repeat the same if no changes are needed.
-Return the entire file in full, with no unfilled placeholders!
-This must be an acceptable complete LaTeX writeup.
-Do not hallucinate any details!
-Ensure proper citation usage:
-- Always include references within \begin{{filecontents}}{{references.bib}} ... \end{{filecontents}}, even if they haven't changed from the previous round.
-- Use citations from the provided references.bib content.
+请在三个反引号中提供修改后的完整 LaTeX，如果不需要修改也可以重复相同内容。
+返回完整的文件内容，不要有任何未填写的占位符！
+这必须是一份可接受的完整 LaTeX 论文。
+不要虚构任何细节！
+确保正确使用引用：
+- 始终将参考文献包含在 \begin{{filecontents}}{{references.bib}} ... \end{{filecontents}} 中，即使它们与上一轮相比没有变化。
+- 使用所提供的 references.bib 内容中的引用。
 """
 
             reflection_response, msg_history = get_response_from_llm(
@@ -1123,27 +1123,27 @@ Ensure proper citation usage:
             review_img_selection = perform_imgs_cap_ref_review_selection(
                 vlm_client, vlm_model, reflection_pdf, reflection_page_info
             )
-            img_reflection_prompt = f"""Now let's reflect on
-The following figures are currently used in the paper: {sorted(used_figs)}
-The following figures are available in the folder but not used in the LaTeX: {sorted(unused_figs)}
+            img_reflection_prompt = f"""现在让我们反思图表的使用：
+以下图表当前在论文中使用：{sorted(used_figs)}
+以下图表在文件夹中存在但未在 LaTeX 中使用：{sorted(unused_figs)}
 
 {reflection_page_info}
 
-The following is the VLM review on figures:
+以下是 VLM 对图表的审阅：
 
 {review_img_selection}
 
-Please review the figures and make the following changes:
-1. For figures that do not add significant value to the paper, move them to the appendix
-2. For figures that are not very informative or do not effectively communicate meaningful patterns, remove them entirely
-3. For figures that does not contain subfigures and present sparse information, consider combining them with other related figures
-4. Update all relevant text discussions to reflect any changes in figure placement or combinations
-5. Enhance the scientific analysis of the remaining figures in the text - provide detailed, insightful discussions of their significance and findings
+请审阅图表并进行以下修改：
+1. 对于对论文没有显著价值的图表，将其移至附录
+2. 对于信息量不大或不能有效传达有意义模式的图表，将其完全移除
+3. 对于不包含子图且信息稀疏的图表，考虑与其他相关图表合并
+4. 更新所有相关文本讨论，以反映图表位置或组合的变化
+5. 加强文本中对剩余图表的科学分析——提供详细、有见地的讨论，说明其意义和发现
 
-Please ensure all changes maintain scientific rigor and improve the paper's clarity and impact.
-Be more aggressive with figure selection - move more figures to the appendix or group them together with other figures if the page limit is already exceeded.
+请确保所有修改保持科学严谨性，并提高论文的清晰度和影响力。
+在图表选择上要更加积极——如果页面限制已超出，将更多图表移至附录或与其他图表组合。
 
-If you believe you are done with reflection, simply say: "I am done"."""
+如果你认为反思已完成，只需说："I am done"。"
             reflection_response, msg_history = get_response_from_llm(
                 prompt=img_reflection_prompt,
                 client=big_client,
@@ -1193,7 +1193,7 @@ If you believe you are done with reflection, simply say: "I am done"."""
         reflection_page_info = get_reflection_page_info(reflection_pdf, page_limit)
 
         final_reflection_prompt = """{reflection_page_info}
-USE MINIMAL EDITS TO OPTIMIZE THE PAGE LIMIT USAGE."""
+请用最小的修改来优化页面限制的使用。"""
         reflection_response, msg_history = get_response_from_llm(
             prompt=final_reflection_prompt,
             client=big_client,

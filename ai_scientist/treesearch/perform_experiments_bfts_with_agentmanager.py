@@ -36,12 +36,12 @@ def journal_to_rich_tree(journal: Journal, cfg):
 
     def append_rec(node: Node, tree):
         if node.is_buggy:
-            s = "[red]◍ bug"
+            s = "[red]◍ 有bug"
         else:
             style = "bold " if node is best_node else ""
 
             if node is best_node:
-                s = f"[{style}green]● {node.metric.value:.3f} (best)"
+                s = f"[{style}green]● {node.metric.value:.3f} (最佳)"
             else:
                 s = f"[{style}green]● {node.metric.value:.3f}"
 
@@ -49,7 +49,7 @@ def journal_to_rich_tree(journal: Journal, cfg):
         for child in node.children:
             append_rec(child, subtree)
 
-    tree = Tree("[bold blue]Solution tree")
+    tree = Tree("[bold blue]解决方案树")
     for n in journal.draft_nodes:
         append_rec(n, tree)
     return tree
@@ -67,7 +67,7 @@ def perform_experiments_bfts(config_path: str):
 
     global_step = 0
 
-    with Status("Preparing agent workspace (copying and extracting files) ..."):
+    with Status("正在准备 agent 工作空间（复制和提取文件）..."):
         prep_agent_workspace(cfg)
 
     def cleanup():
@@ -88,20 +88,20 @@ def perform_experiments_bfts(config_path: str):
         MofNCompleteColumn(),
         TimeRemainingColumn(),
     )
-    status = Status("[green]Running experiments...")
-    prog.add_task("Progress:", total=cfg.agent.steps, completed=global_step)
+    status = Status("[green]正在运行实验...")
+    prog.add_task("进度:", total=cfg.agent.steps, completed=global_step)
 
     def create_exec_callback(status_obj):
         def exec_callback(*args, **kwargs):
-            status_obj.update("[magenta]Executing code...")
+            status_obj.update("[magenta]正在执行代码...")
             res = interpreter.run(*args, **kwargs)
-            status_obj.update("[green]Generating code...")
+            status_obj.update("[green]正在生成代码...")
             return res
 
         return exec_callback
 
     def step_callback(stage, journal):
-        print("Step complete")
+        print("步骤完成")
         try:
             # Generate and save notes for this step
             notes_dir = cfg.log_dir / f"stage_{stage.name}" / "notes"
@@ -152,11 +152,11 @@ def perform_experiments_bfts(config_path: str):
             save_run(cfg, journal, stage_name=f"stage_{stage.name}")
 
         except Exception as e:
-            print(f"Error in step callback: {e}")
+            print(f"步骤回调出错: {e}")
 
-        print(f"Run saved at {cfg.log_dir / f'stage_{stage.name}'}")
-        print(f"Step {len(journal)}/{stage.max_iterations} at stage_{stage.name}")
-        print(f"Run saved at {cfg.log_dir / f'stage_{stage.name}'}")
+        print(f"运行已保存至 {cfg.log_dir / f'stage_{stage.name}'}")
+        print(f"步骤 {len(journal)}/{stage.max_iterations}，位于 stage_{stage.name}")
+        print(f"运行已保存至 {cfg.log_dir / f'stage_{stage.name}'}")
 
     def generate_live(manager):
         current_stage = manager.current_stage
@@ -167,23 +167,23 @@ def perform_experiments_bfts(config_path: str):
         if current_journal:
             tree = journal_to_rich_tree(current_journal, cfg)
         else:
-            tree = Tree("[bold blue]No results yet")
+            tree = Tree("[bold blue]暂无结果")
 
         file_paths = [
-            f"Result visualization:\n[yellow]▶ {str((cfg.log_dir / 'tree_plot.html'))}",
-            f"Agent workspace directory:\n[yellow]▶ {str(cfg.workspace_dir)}",
-            f"Experiment log directory:\n[yellow]▶ {str(cfg.log_dir)}",
+            f"结果可视化:\n[yellow]▶ {str((cfg.log_dir / 'tree_plot.html'))}",
+            f"Agent 工作空间目录:\n[yellow]▶ {str(cfg.workspace_dir)}",
+            f"实验日志目录:\n[yellow]▶ {str(cfg.log_dir)}",
         ]
 
         stage_info = [
-            "[bold]Experiment Progress:",
-            f"Current Stage: [cyan]{current_stage.name if current_stage else 'None'}[/cyan]",
-            f"Completed Stages: [green]{', '.join(manager.completed_stages)}[/green]",
+            "[bold]实验进度:",
+            f"当前阶段: [cyan]{current_stage.name if current_stage else '无'}[/cyan]",
+            f"已完成阶段: [green]{', '.join(manager.completed_stages)}[/green]",
         ]
 
         left = Group(
-            Panel(Text(task_desc_str.strip()), title="Task description"),
-            Panel(Text("\n".join(stage_info)), title="Stage Progress"),
+            Panel(Text(task_desc_str.strip()), title="任务描述"),
+            Panel(Text("\n".join(stage_info)), title="阶段进度"),
             prog,
             status,
         )
@@ -198,8 +198,8 @@ def perform_experiments_bfts(config_path: str):
                     equal=True,
                 ),
             ),
-            title=f'[b]AIDE is working on experiment: [bold green]"{cfg.exp_name}[/b]"',
-            subtitle="Press [b]Ctrl+C[/b] to stop the run",
+            title=f'[b]AIDE 正在运行实验: [bold green]"{cfg.exp_name}[/b]"',
+            subtitle="按 [b]Ctrl+C[/b] 停止运行",
         )
 
     live = Live(
@@ -225,7 +225,7 @@ def perform_experiments_bfts(config_path: str):
             logger.error(f"Failed to save manager journals: {e}")
 
     if cfg.generate_report:
-        print("Generating final report from all stages...")
+        print("正在从所有阶段生成最终报告...")
         (
             draft_summary,
             baseline_summary,
@@ -249,11 +249,11 @@ def perform_experiments_bfts(config_path: str):
         with open(ablation_summary_path, "w") as ablation_file:
             json.dump(ablation_summary, ablation_file, indent=2)
 
-        print(f"Summary reports written to files:")
-        print(f"- Draft summary: {draft_summary_path}")
-        print(f"- Baseline summary: {baseline_summary_path}")
-        print(f"- Research summary: {research_summary_path}")
-        print(f"- Ablation summary: {ablation_summary_path}")
+        print(f"摘要报告已写入以下文件:")
+        print(f"- 初始实现摘要: {draft_summary_path}")
+        print(f"- 基线调优摘要: {baseline_summary_path}")
+        print(f"- 创新研究摘要: {research_summary_path}")
+        print(f"- 消融研究摘要: {ablation_summary_path}")
 
 
 if __name__ == "__main__":

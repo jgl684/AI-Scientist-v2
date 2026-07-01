@@ -201,10 +201,10 @@ def create_client(model: str) -> tuple[Any, str]:
         "gpt-4o-mini-2024-07-18",
         "o3-mini",
     ]:
-        print(f"Using OpenAI API with model {model}.")
+        print(f"使用 OpenAI API，模型 {model}。")
         return openai.OpenAI(), model
     elif model.startswith("ollama/"):
-        print(f"Using Ollama API with model {model}.")
+        print(f"使用 Ollama API，模型 {model}。")
         return openai.OpenAI(
             api_key=os.environ.get("OLLAMA_API_KEY", ""),
             base_url="http://localhost:11434/v1"

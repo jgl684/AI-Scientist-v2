@@ -3,104 +3,104 @@
     <img src="docs/logo_v1.png" width="215" alt="AI Scientist v2 Logo" />
   </a>
   <h1>
-    <b>The AI Scientist-v2: Workshop-Level Automated</b><br>
-    <b>Scientific Discovery via Agentic Tree Search</b>
+    <b>The AI Scientist-v2: 基于智能体树搜索的</b><br>
+    <b>Workshop 级自动化科学发现</b>
   </h1>
 </div>
 
 <p align="center">
-  📚 <a href="https://pub.sakana.ai/ai-scientist-v2/paper">[Paper]</a> |
-  📝 <a href="https://sakana.ai/ai-scientist-first-publication/"> [Blog Post]</a> |
-  📂 <a href="https://github.com/SakanaAI/AI-Scientist-ICLR2025-Workshop-Experiment"> [ICLR2025 Workshop Experiment]</a>
+  📚 <a href="https://pub.sakana.ai/ai-scientist-v2/paper">[论文]</a> |
+  📝 <a href="https://sakana.ai/ai-scientist-first-publication/">[博客文章]</a> |
+  📂 <a href="https://github.com/SakanaAI/AI-Scientist-ICLR2025-Workshop-Experiment">[ICLR2025 Workshop 实验]</a>
 </p>
 
-Fully autonomous scientific research systems are becoming increasingly capable, with AI playing a pivotal role in transforming how scientific discoveries are made.
-We are excited to introduce The AI Scientist-v2, a generalized end-to-end agentic system that has generated the first workshop paper written entirely by AI and accepted through peer review.
+全自动化的科学研究系统正变得越来越强大，AI 在推动科学发现方式的变革中扮演着关键角色。
+我们激动地推出 The AI Scientist-v2——一个通用的端到端智能体系统，该系统已生成了首篇完全由 AI 撰写并通过同行评审的 workshop 论文。
 
-This system autonomously generates hypotheses, runs experiments, analyzes data, and writes scientific manuscripts. Unlike [its predecessor (AI Scientist-v1)](https://github.com/SakanaAI/AI-Scientist), the AI Scientist-v2 removes reliance on human-authored templates, generalizes across Machine Learning (ML) domains, and employs a progressive agentic tree search, guided by an experiment manager agent.
+该系统能够自主生成假设、运行实验、分析数据并撰写科学手稿。与[其前身（AI Scientist-v1）](https://github.com/SakanaAI/AI-Scientist)不同，AI Scientist-v2 不再依赖人工编写的模板，能够泛化到不同的机器学习（ML）领域，并采用由实验管理智能体引导的渐进式智能体树搜索方法。
 
-> **Note:**
-> The AI Scientist-v2 doesn’t necessarily produce better papers than v1, especially when a strong starting template is available. v1 follows well-defined templates, leading to high success rates, while v2 takes a broader, more exploratory approach with lower success rates. v1 works best for tasks with clear objectives and a solid foundation, whereas v2 is designed for open-ended scientific exploration.
+> **注意：**
+> AI Scientist-v2 并不一定比 v1 产出更好的论文，尤其是在已有强大的起始模板可用时。v1 遵循定义明确的模板，因此成功率高；而 v2 采用更广泛、更具探索性的方法，成功率较低。v1 最适合具有明确目标和坚实基础的场景，而 v2 则专为开放式科学探索而设计。
 
-> **Caution!**
-> This codebase will execute Large Language Model (LLM)-written code. There are various risks and challenges associated with this autonomy, including the potential use of dangerous packages, uncontrolled web access, and the possibility of spawning unintended processes. Ensure that you run this within a controlled sandbox environment (e.g., a Docker container). Use at your own discretion.
+> **警告！**
+> 此代码库将执行由大语言模型（LLM）编写的代码。这种自主性伴随着各种风险和挑战，包括可能使用危险软件包、不受控制的网络访问以及可能产生非预期的进程。请确保在受控的沙箱环境（例如 Docker 容器）中运行此代码。使用风险自负。
 
-## Table of Contents
+## 目录
 
-1.  [Requirements](#requirements)
-    *   [Installation](#installation)
-    *   [Supported Models and API Keys](#supported-models-and-api-keys)
-2.  [Generate Research Ideas](#generate-research-ideas)
-3.  [Run AI Scientist-v2 Paper Generation Experiments](#run-ai-scientist-v2-paper-generation-experiments)
-4.  [Citing The AI Scientist-v2](#citing-the-ai-scientist-v2)
-5.  [Frequently Asked Questions](#frequently-asked-questions)
-6.  [Acknowledgement](#acknowledgement)
+1.  [环境要求](#环境要求)
+    *   [安装](#安装)
+    *   [支持的模型和 API 密钥](#支持的模型和-api-密钥)
+2.  [生成研究想法](#生成研究想法)
+3.  [运行 AI Scientist-v2 论文生成实验](#运行-ai-scientist-v2-论文生成实验)
+4.  [引用 The AI Scientist-v2](#引用-the-ai-scientist-v2)
+5.  [常见问题](#常见问题)
+6.  [致谢](#致谢)
 
-## Requirements
+## 环境要求
 
-This code is designed to run on Linux with NVIDIA GPUs using CUDA and PyTorch.
+本代码设计在配备 NVIDIA GPU 的 Linux 系统上运行，使用 CUDA 和 PyTorch。
 
-### Installation
+### 安装
 
 ```bash
-# Create a new conda environment
+# 创建一个新的 conda 环境
 conda create -n ai_scientist python=3.11
 conda activate ai_scientist
 
-# Install PyTorch with CUDA support (adjust pytorch-cuda version for your setup)
+# 安装支持 CUDA 的 PyTorch（请根据你的环境调整 pytorch-cuda 版本）
 conda install pytorch torchvision torchaudio pytorch-cuda=12.4 -c pytorch -c nvidia
 
-# Install PDF and LaTeX tools
+# 安装 PDF 和 LaTeX 工具
 conda install anaconda::poppler
 conda install conda-forge::chktex
 
-# Install Python package requirements
+# 安装 Python 包依赖
 pip install -r requirements.txt
 ```
 
-Installation usually takes no more than one hour.
+安装过程通常不超过一小时。
 
-### Supported Models and API Keys
+### 支持的模型和 API 密钥
 
-#### OpenAI Models
+#### OpenAI 模型
 
-By default, the system uses the `OPENAI_API_KEY` environment variable for OpenAI models.
+默认情况下，系统使用 `OPENAI_API_KEY` 环境变量来访问 OpenAI 模型。
 
-#### Gemini Models
+#### Gemini 模型
 
-By default, the system uses the `GEMINI_API_KEY` environment variable for Gemini models through OpenAI API.
+默认情况下，系统通过 OpenAI API 使用 `GEMINI_API_KEY` 环境变量来访问 Gemini 模型。
 
-#### Claude Models via AWS Bedrock
+#### Claude 模型（通过 AWS Bedrock）
 
-To use Claude models provided by Amazon Bedrock, install the necessary additional packages:
+要使用由 Amazon Bedrock 提供的 Claude 模型，请安装必要的额外软件包：
 ```bash
 pip install anthropic[bedrock]
 ```
-Next, configure valid [AWS Credentials](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-envvars.html) and the target [AWS Region](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-regions.html) by setting the following environment variables: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION_NAME`.
+接下来，配置有效的 [AWS 凭证](https://docs.aws.amazon.com/cli/v1/userguide/cli-configure-envvars.html)和目标 [AWS 区域](https://docs.aws.amazon.com/bedrock/latest/userguide/bedrock-regions.html)，设置以下环境变量：`AWS_ACCESS_KEY_ID`、`AWS_SECRET_ACCESS_KEY`、`AWS_REGION_NAME`。
 
-#### Semantic Scholar API (Literature Search)
+#### Semantic Scholar API（文献搜索）
 
-Our code can optionally use a Semantic Scholar API Key (`S2_API_KEY`) for higher throughput during literature search [if you have one](https://www.semanticscholar.org/product/api). This is used during both the ideation and paper writing stages. The system should work without it, though you might encounter rate limits or reduced novelty checking during ideation. If you experience issues with Semantic Scholar, you can skip the citation phase during paper generation.
+我们的代码可以选择使用 Semantic Scholar API 密钥（`S2_API_KEY`），以便在文献搜索期间获得更高的吞吐量（[如果你有的话](https://www.semanticscholar.org/product/api)）。该密钥在构思和论文撰写阶段都会使用。没有该密钥系统通常也能工作，但在构思阶段可能会遇到速率限制或新颖性检查能力下降。如果你在使用 Semantic Scholar 时遇到问题，可以在论文生成阶段跳过引用环节。
 
-#### Setting API Keys
+#### 设置 API 密钥
 
-Ensure you provide the necessary API keys as environment variables for the models you intend to use. For example:
+请确保为你计划使用的模型提供必要的 API 密钥作为环境变量。例如：
 ```bash
 export OPENAI_API_KEY="YOUR_OPENAI_KEY_HERE"
 export S2_API_KEY="YOUR_S2_KEY_HERE"
-# Set AWS credentials if using Bedrock
+# 如果使用 Bedrock，请设置 AWS 凭证
 # export AWS_ACCESS_KEY_ID="YOUR_AWS_ACCESS_KEY_ID"
 # export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
 # export AWS_REGION_NAME="your-aws-region"
 ```
 
-## Generate Research Ideas
+## 生成研究想法
 
-Before running the full AI Scientist-v2 experiment pipeline, you first use the `ai_scientist/perform_ideation_temp_free.py` script to generate potential research ideas. This script uses an LLM to brainstorm and refine ideas based on a high-level topic description you provide, interacting with tools like Semantic Scholar to check for novelty.
+在运行完整的 AI Scientist-v2 实验流水线之前，你需要先使用 `ai_scientist/perform_ideation_temp_free.py` 脚本来生成潜在的研究想法。该脚本使用 LLM 根据你提供的高层级主题描述来头脑风暴和精炼想法，并与 Semantic Scholar 等工具交互以检查新颖性。
 
-1.  **Prepare a Topic Description:** Create a Markdown file (e.g., `my_research_topic.md`) describing the research area or theme you want the AI to explore. This file should contain sections like `Title`, `Keywords`, `TL;DR`, and `Abstract` to define the scope of the research. Refer to the example file `ai_scientist/ideas/i_cant_believe_its_not_better.md` for the expected structure and content format. Place your file in a location accessible by the script (e.g., the `ai_scientist/ideas/` directory).
+1.  **准备主题描述：** 创建一个 Markdown 文件（例如 `my_research_topic.md`），描述你希望 AI 探索的研究领域或主题。该文件应包含 `Title`、`Keywords`、`TL;DR` 和 `Abstract` 等章节，以定义研究范围。请参考示例文件 `ai_scientist/ideas/i_cant_believe_its_not_better.md` 了解预期的结构和内容格式。将你的文件放在脚本可访问的位置（例如 `ai_scientist/ideas/` 目录）。
 
-2.  **Run the Ideation Script:** Execute the script from the main project directory, pointing it to your topic description file and specifying the desired LLM.
+2.  **运行构思脚本：** 从主项目目录执行脚本，指定主题描述文件路径和所需的 LLM。
 
     ```bash
     python ai_scientist/perform_ideation_temp_free.py \
@@ -109,36 +109,36 @@ Before running the full AI Scientist-v2 experiment pipeline, you first use the `
      --max-num-generations 20 \
      --num-reflections 5
     ```
-    *   `--workshop-file`: Path to your topic description Markdown file.
-    *   `--model`: The LLM to use for generating ideas (ensure you have the corresponding API key set).
-    *   `--max-num-generations`: How many distinct research ideas to attempt generating.
-    *   `--num-reflections`: How many refinement steps the LLM should perform for each idea.
+    *   `--workshop-file`：主题描述 Markdown 文件的路径。
+    *   `--model`：用于生成想法的 LLM（请确保你已设置相应的 API 密钥）。
+    *   `--max-num-generations`：尝试生成多少个不同的研究想法。
+    *   `--num-reflections`：LLM 对每个想法进行多少次精炼步骤。
 
-3.  **Output:** The script will generate a JSON file named after your input Markdown file (e.g., `ai_scientist/ideas/my_research_topic.json`). This file will contain a list of structured research ideas, including hypotheses, proposed experiments, and related work analysis.
+3.  **输出：** 脚本将生成一个 JSON 文件，文件名基于你的输入 Markdown 文件（例如 `ai_scientist/ideas/my_research_topic.json`）。该文件将包含一系列结构化的研究想法，包括假设、拟议的实验和相关工作分析。
 
-4.  **Proceed to Experiments:** Once you have the generated JSON file containing research ideas, you can proceed to the next section to run the experiments.
+4.  **进入实验阶段：** 获得包含研究想法的 JSON 文件后，你可以继续下一节来运行实验。
 
-This ideation step guides the AI Scientist towards specific areas of interest and produces concrete research directions to be tested in the main experimental pipeline.
+此构思步骤将 AI Scientist 引导至特定的兴趣领域，并产生具体的研究方向，供主实验流水线进行测试。
 
-## Run AI Scientist-v2 Paper Generation Experiments
+## 运行 AI Scientist-v2 论文生成实验
 
-Using the JSON file generated in the previous ideation step, you can now launch the main AI Scientist-v2 pipeline. This involves running experiments via agentic tree search, analyzing results, and generating a paper draft.
+使用上一构思步骤中生成的 JSON 文件，你现在可以启动主 AI Scientist-v2 流水线。这包括通过智能体树搜索运行实验、分析结果并生成论文草稿。
 
-Specify the models used for the write-up and review phases via command-line arguments.
-The configuration for the best-first tree search (BFTS) is located in `bfts_config.yaml`. Adjust parameters in this file as needed.
+通过命令行参数指定用于撰写和评审阶段的模型。
+最佳优先树搜索（BFTS）的配置位于 `bfts_config.yaml` 中。请根据需要调整该文件中的参数。
 
-Key tree search configuration parameters in `bfts_config.yaml`:
+`bfts_config.yaml` 中的关键树搜索配置参数：
 
--   `agent` config:
-    -   Set `num_workers` (number of parallel exploration paths) and `steps` (maximum number of nodes to explore). For example, if `num_workers=3` and `steps=21`, the tree search will explore up to 21 nodes, expanding 3 nodes concurrently at each step.
-    -   `num_seeds`: Should generally be the same as `num_workers` if `num_workers` is less than 3. Otherwise, set `num_seeds` to 3.
-    -   Note: Other agent parameters like `k_fold_validation`, `expose_prediction`, and `data_preview` are not used in the current version.
--   `search` config:
-    -   `max_debug_depth`: The maximum number of times the agent will attempt to debug a failing node before abandoning that search path.
-    -   `debug_prob`: The probability of attempting to debug a failing node.
-    -   `num_drafts`: The number of initial root nodes (i.e., the number of independent trees to grow) during Stage 1.
+-   `agent` 配置：
+    -   设置 `num_workers`（并行探索路径的数量）和 `steps`（要探索的最大节点数）。例如，如果 `num_workers=3` 且 `steps=21`，树搜索将探索最多 21 个节点，每步并发扩展 3 个节点。
+    -   `num_seeds`：如果 `num_workers` 小于 3，通常应与 `num_workers` 保持一致。否则，将 `num_seeds` 设置为 3。
+    -   注意：其他 agent 参数如 `k_fold_validation`、`expose_prediction` 和 `data_preview` 在当前版本中未使用。
+-   `search` 配置：
+    -   `max_debug_depth`：agent 在放弃该搜索路径之前尝试调试失败节点的最大次数。
+    -   `debug_prob`：尝试调试失败节点的概率。
+    -   `num_drafts`：第一阶段中初始根节点的数量（即独立生长的树的数量）。
 
-Example command to run AI-Scientist-v2 using a generated idea file (e.g., `my_research_topic.json`). Please review `bfts_config.yaml` for detailed tree search parameters (the default config includes `claude-3-5-sonnet` for experiments). Do not set `load_code` if you do not want to initialize experimentation with a code snippet.
+以下是使用生成的想法文件（如 `my_research_topic.json`）运行 AI-Scientist-v2 的示例命令。请查看 `bfts_config.yaml` 了解详细的树搜索参数（默认配置中实验部分使用 `claude-3-5-sonnet`）。如果你不想用代码片段初始化实验，请不要设置 `load_code`。
 
 ```bash
 python launch_scientist_bfts.py \
@@ -152,13 +152,13 @@ python launch_scientist_bfts.py \
  --num_cite_rounds 20
 ```
 
-Once the initial experimental stage is complete, you will find a timestamped log folder inside the `experiments/` directory. Navigate to `experiments/"timestamp_ideaname"/logs/0-run/` within that folder to find the tree visualization file `unified_tree_viz.html`.
-After all experiment stages are complete, the writeup stage begins. The writeup stage typically takes about 20 to 30 minutes in total. Once it finishes, you should see `timestamp_ideaname.pdf` in the `timestamp_ideaname` folder.
-For this example run, all stages typically finish within several hours.
+初始实验阶段完成后，你将在 `experiments/` 目录中找到一个带时间戳的日志文件夹。进入 `experiments/"timestamp_ideaname"/logs/0-run/` 文件夹，找到树可视化文件 `unified_tree_viz.html`。
+所有实验阶段完成后，撰写阶段将开始。撰写阶段通常总共需要约 20 到 30 分钟。完成后，你应该能在 `timestamp_ideaname` 文件夹中看到 `timestamp_ideaname.pdf`。
+对于此示例运行，所有阶段通常会在数小时内完成。
 
-## Citing The AI Scientist-v2
+## 引用 The AI Scientist-v2
 
-If you use **The AI Scientist-v2** in your research, please cite our work as follows:
+如果你在研究中使用了 **The AI Scientist-v2**，请按以下格式引用我们的工作：
 
 ```bibtex
 @article{aiscientist_v2,
@@ -169,42 +169,42 @@ If you use **The AI Scientist-v2** in your research, please cite our work as fol
 }
 ```
 
-## Frequently Asked Questions
+## 常见问题
 
-**Why wasn't a PDF or a review generated for my experiment?**
+**为什么我的实验没有生成 PDF 或评审结果？**
 
-The AI Scientist-v2 completes experiments with a success rate that depends on the chosen foundation model, and the complexity of the idea. Higher success rates are generally observed when using powerful models like Claude 3.5 Sonnet for the experimentation phase.
+AI Scientist-v2 完成实验的成功率取决于所选用的基础模型以及想法的复杂程度。当使用强大的模型（如 Claude 3.5 Sonnet）进行实验阶段时，通常能获得更高的成功率。
 
-**What is the estimated cost per experiment?**
+**每次实验的预估成本是多少？**
 
-The ideation step cost depends on the LLM used and the number of generations/reflections, but is generally low (a few dollars). For the main experiment pipeline, using Claude 3.5 Sonnet for the experimentation phase typically costs around $15–$20 per run. The subsequent writing phase adds approximately $5 when using the default models specified in the example command. Using GPT-4o for `model_citation` is recommended as it can help reduce writing costs.
+构思步骤的成本取决于使用的 LLM 以及迭代次数和反思次数，但通常较低（几美元）。对于主实验流水线，使用 Claude 3.5 Sonnet 进行实验阶段通常每次运行花费约 $15–$20。随后的撰写阶段在使用示例命令中指定的默认模型时，额外增加约 $5。建议使用 GPT-4o 作为 `model_citation`，因为它有助于降低撰写成本。
 
-**How do I run The AI Scientist-v2 for different subject fields?**
+**如何针对不同的学科领域运行 The AI Scientist-v2？**
 
-First, perform the [Generate Research Ideas](#generate-research-ideas) step. Create a new Markdown file describing your desired subject field or topic, following the structure of the example `ai_scientist/ideas/i_cant_believe_its_not_better.md`. Run the `perform_ideation_temp_free.py` script with this file to generate a corresponding JSON idea file. Then, proceed to the [Run AI Scientist-v2 Paper Generation Experiments](#run-ai-scientist-v2-paper-generation-experiments) step, using this JSON file with the `launch_scientist_bfts.py` script via the `--load_ideas` argument.
+首先，执行[生成研究想法](#生成研究想法)步骤。创建一个新的 Markdown 文件，描述你想要的学科领域或主题，遵循示例文件 `ai_scientist/ideas/i_cant_believe_its_not_better.md` 的结构。使用该文件运行 `perform_ideation_temp_free.py` 脚本以生成相应的 JSON 想法文件。然后，进入[运行 AI Scientist-v2 论文生成实验](#运行-ai-scientist-v2-论文生成实验)步骤，通过 `--load_ideas` 参数将此 JSON 文件与 `launch_scientist_bfts.py` 脚本一起使用。
 
-**What should I do if I have problems accessing the Semantic Scholar API?**
+**如果在访问 Semantic Scholar API 时遇到问题，该怎么办？**
 
-The Semantic Scholar API is used to assess the novelty of generated ideas and to gather citations during the paper write-up phase. If you don't have an API key, encounter rate limits, you may be able to skip these phases.
+Semantic Scholar API 用于评估所生成想法的新颖性，并在论文撰写阶段收集引用文献。如果你没有 API 密钥或遇到速率限制，你可能可以跳过这些阶段。
 
-**I encountered a "CUDA Out of Memory" error. What can I do?**
+**我遇到了 "CUDA Out of Memory" 错误。该怎么办？**
 
-This error typically occurs when the AI Scientist-v2 attempts to load or run a model that requires more GPU memory than available on your system. To resolve this, you can try updating your ideation prompt file (`ai_scientist/ideas/my_research_topic.md`) to suggest using smaller models for the experiments.
+此错误通常发生在 AI Scientist-v2 尝试加载或运行需要超出系统可用 GPU 显存的模型时。要解决此问题，你可以尝试更新构思提示文件（`ai_scientist/ideas/my_research_topic.md`），建议实验使用更小的模型。
 
-## Acknowledgement
+## 致谢
 
-The tree search component implemented within the `ai_scientist` directory is built on top of the [AIDE](https://github.com/WecoAI/aideml) project. We thank the AIDE developers for their valuable contributions and for making their work publicly available.
+`ai_scientist` 目录中实现的树搜索组件基于 [AIDE](https://github.com/WecoAI/aideml) 项目构建。我们感谢 AIDE 开发者的宝贵贡献以及他们将其工作公开发布。
 
 
 ## Star History
 
 [![Star History Chart](https://api.star-history.com/svg?repos=SakanaAI/AI-Scientist-v2&type=Date)](https://star-history.com/#SakanaAI/AI-Scientist-v2&Date)
 
-## ⚖️ License & Responsible Use
+## ⚖️ 许可证与负责任使用
 
-This project is licensed under **The AI Scientist Source Code License** (a derivative of the Responsible AI License). 
+本项目基于 **The AI Scientist Source Code License**（衍生自 Responsible AI License）进行许可。
 
-**Mandatory Disclosure:** By using this code, you are legally bound to clearly and prominently disclose the use of AI in any resulting scientific manuscripts or papers. 
+**强制披露：** 使用本代码，你具有法律义务在任何由此产生的科学手稿或论文中清晰、显著地披露 AI 的使用。
 
-We recommend the following attribution in your paper's Abstract or Methods section:
+我们建议在论文的摘要或方法部分加入以下声明：
 > "This manuscript was autonomously generated using [The AI Scientist](https://github.com/SakanaAI/AI-Scientist)."

@@ -9,13 +9,13 @@ def journal2report(journal: Journal, task_desc: dict, rcfg: StageConfig):
     """
     report_input = journal.generate_summary(include_code=True)
     system_prompt_dict = {
-        "Role": "You are a research assistant that always uses concise language.",
-        "Goal": "The goal is to write a technical report summarising the empirical findings and technical decisions.",
-        "Input": "You are given a raw research journal with list of design attempts and their outcomes, and a research idea description.",
+        "Role": "你是一位总是使用简洁语言的研究助理。",
+        "Goal": "目标是撰写一份技术报告，总结实证发现和技术决策。",
+        "Input": "你会收到一份原始的研究日志，其中包含设计尝试及其结果的列表，以及研究思路描述。",
         "Output": [
-            "Your output should be a single markdown document.",
-            "Your report should have the following sections: Introduction, Preprocessing, Methods, Results Discussion, Future Work",
-            "You can include subsections if needed.",
+            "你的输出应为一份单一的markdown文档。",
+            "你的报告应包含以下章节：Introduction, Preprocessing, Methods, Results Discussion, Future Work",
+            "你可以根据需要包含子章节。",
         ],
     }
     context_prompt = (

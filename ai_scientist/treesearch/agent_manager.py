@@ -148,22 +148,22 @@ class AgentManager:
         }
         self.main_stage_goals: Dict[int, str] = {
             1: """
-                - Focus on getting basic working implementation
-                - Use a simple dataset
-                - Aim for basic functional correctness
-                - If you are given \"Code To Use\", you can directly use it as a starting point.""",
+                - 专注于获得基本可工作的实现
+                - 使用简单的数据集
+                - 目标是基本功能的正确性
+                - 如果提供了"待用代码"，可以直接将其作为起点。""",
             2: """
-                - Change hyperparameters such as learning rate, number of epochs, batch size, etc. to improve the performance
-                - DO NOT change the model architecture from the previous stage
-                - Introduce TWO more new datasets from HuggingFace test the model. Try very hard to think what Huggingface datasets can be used here for testing.""",
+                - 调整学习率、训练轮数、批次大小等超参数以提高性能
+                - 不要更改前一阶段的模型架构
+                - 从HuggingFace引入两个新数据集来测试模型。努力思考哪些HuggingFace数据集可以用于此测试。""",
             3: """
-                - Explore novel improvements
-                - Come up with experiments to reveal new insights
-                - Be creative and think outside the box
-                - MAKE SURE you use THREE HuggingFace dataset in total to test your models""",
+                - 探索新颖的改进方法
+                - 设计实验以揭示新的洞察
+                - 发挥创造力，跳出思维定式
+                - 确保总共使用三个HuggingFace数据集来测试你的模型""",
             4: """
-                - Conduct systematic component analysis that reveals the contribution of each part
-                - Use the same datasets you used from the previous stage""",
+                - 进行系统性的组件分析，揭示每个部分的贡献
+                - 使用与前一阶段相同的数据集""",
         }
         # Create initial stage
         self._create_initial_stage()
@@ -177,10 +177,10 @@ class AgentManager:
         )
 
     def _get_task_desc_str(self):
-        task_desc = """You are an ambitious AI researcher who is looking to publish a paper that will contribute significantly to the field.
-You have an idea and you want to conduct creative experiments to gain scientific insights.
-Your aim is to run experiments to gather sufficient results for a top conference paper.
-Your research idea:\n\n
+        task_desc = """你是一位雄心勃勃的AI研究员，希望发表一篇能对该领域做出重大贡献的论文。
+你有一个研究想法，希望通过创造性的实验来获取科学洞察。
+你的目标是运行实验以收集足够的结果来撰写顶级会议论文。
+你的研究想法：\n\n
 """
         task_desc += (
             "Title:\n"
@@ -350,14 +350,14 @@ Your research idea:\n\n
 
         vlm_feedback = self._parse_vlm_feedback(best_node)
         eval_prompt = f"""
-        Evaluate if the current sub-stage is complete based on the following evidence:
-        1. Figure Analysis:
+        根据以下证据评估当前子阶段是否完成：
+        1. 图表分析：
         {vlm_feedback}
 
-        Requirements for completion:
+        完成要求：
         - {current_substage.goals}
 
-        Provide a detailed evaluation of completion status.
+        请提供完成状态的详细评估。
         """
 
         try:
@@ -454,19 +454,19 @@ Your research idea:\n\n
             # Normal stage 2 completion check
             vlm_feedback = self._parse_vlm_feedback(best_node)
             eval_prompt = f"""
-            Evaluate if stage 2 (baseline tuning) is complete based on the following evidence:
+            根据以下证据评估阶段2（基线调优）是否完成：
 
-            1. Figure Analysis:
+            1. 图表分析：
             {vlm_feedback}
 
-            2. Datasets Tested: {best_node.datasets_successfully_tested}
+            2. 已测试的数据集：{best_node.datasets_successfully_tested}
 
-            Requirements for completion:
-            1. Training curves should show stable convergence
-            2. Results should be tested on at least two datasets
-            3. No major instabilities or issues in the plots
+            完成要求：
+            1. 训练曲线应显示稳定的收敛
+            2. 结果应至少在两个数据集上进行了测试
+            3. 图表中没有重大的不稳定或问题
 
-            Provide a detailed evaluation of completion status.
+            请提供完成状态的详细评估。
             """
 
             try:
@@ -566,28 +566,28 @@ Your research idea:\n\n
 
         # Create prompt for the LLM
         prompt = f"""
-        Based on the current experimental progress, generate focused goals for the next sub-stage.
+        基于当前的实验进展，为下一个子阶段生成具体的目标。
 
-        Main Stage Goals:
+        主阶段目标：
         {main_stage_goal}
 
-        Current Progress:
-        - Total attempts: {metrics['total_nodes']}
-        - Successful implementations: {metrics['good_nodes']}
-        - Best performance: {metrics['best_metric']['value'] if metrics['best_metric'] else 'N/A'}
-        - Convergence status: {progress['convergence_status']}
+        当前进展：
+        - 总尝试次数：{metrics['total_nodes']}
+        - 成功实现：{metrics['good_nodes']}
+        - 最佳性能：{metrics['best_metric']['value'] if metrics['best_metric'] else 'N/A'}
+        - 收敛状态：{progress['convergence_status']}
 
-        Current Issues:
+        当前问题：
         {json.dumps(issues, indent=2)}
 
-        Recent Changes:
+        最近的变更：
         {json.dumps(progress['recent_changes'], indent=2)}
 
-        Generate specific, actionable sub-stage goals that:
-        1. Address current issues and limitations
-        2. Build on recent progress
-        3. Move towards main stage goals
-        4. Are concrete and measurable
+        生成具体、可操作的子阶段目标，要求：
+        1. 解决当前问题和限制
+        2. 基于最近的进展
+        3. 朝着主阶段目标推进
+        4. 具体且可衡量
         """
 
         # Define the function specification for the LLM
@@ -908,18 +908,17 @@ Your research idea:\n\n
                 json.dump(analysis_data, f, indent=2)
 
         prompt_parts.append(
-            "Based on the above comprehensive analysis, determine the appropriate "
-            "configuration for the next experimental stage. Consider:\n"
-            "1. Visual analysis insights from plots\n"
-            "2. Individual node performance and patterns\n"
-            "3. Overall progress and convergence status\n"
-            "4. Identified issues and challenges\n\n"
-            "Include:\n"
-            "1. Stage name (brief, descriptive)\n"
-            "2. Detailed description of the stage's purpose\n"
-            "3. Specific, measurable goals\n"
-            "4. Maximum iterations needed\n"
-            "5. Success metric threshold (if applicable)"
+            "基于以上综合分析，确定下一实验阶段的合适配置。考虑以下几点：\n"
+            "1. 图表的可视化分析洞察\n"
+            "2. 各节点的性能表现和模式\n"
+            "3. 整体进展和收敛状态\n"
+            "4. 已识别的问题和挑战\n\n"
+            "包含以下内容：\n"
+            "1. 阶段名称（简洁、描述性）\n"
+            "2. 阶段目的的详细描述\n"
+            "3. 具体、可衡量的目标\n"
+            "4. 所需的最大迭代次数\n"
+            "5. 成功指标的阈值（如适用）"
         )
 
         return "\n\n".join(prompt_parts)
@@ -1154,42 +1153,42 @@ Your research idea:\n\n
         """Evaluate whether experiment is ready for next stage"""
 
         eval_prompt = f"""
-        Evaluate whether the current experimental stage should progress to the next stage.
-        Consider all available evidence holistically:
+        评估当前实验阶段是否应该推进到下一阶段。
+        全面考虑所有可用证据：
 
-        Current Stage Information:
-        - Name: {current_stage.name}
-        - Description: {current_stage.description}
-        - Goals: {', '.join(current_stage.goals) if isinstance(current_stage.goals, list) else current_stage.goals}
+        当前阶段信息：
+        - 名称：{current_stage.name}
+        - 描述：{current_stage.description}
+        - 目标：{', '.join(current_stage.goals) if isinstance(current_stage.goals, list) else current_stage.goals}
 
-        Performance Metrics:
+        性能指标：
         {json.dumps(previous_results.get('metrics', {}), indent=2)}
 
-        Identified Issues:
+        已识别的问题：
         {json.dumps(previous_results.get('issues', []), indent=2)}
 
-        Progress Analysis:
+        进展分析：
         {json.dumps(previous_results.get('progress', {}), indent=2)}
 
-        Expected Stage Progression:
-        1. Initial Implementation: Focus on basic working implementation
-        2. Baseline Tuning: Systematic optimization of core parameters
-        3. Creative Research: Novel improvements and approaches
-        4. Ablation Studies: Systematic component analysis
+        预期的阶段推进：
+        1. 初始实现：专注于基本可工作的实现
+        2. 基线调优：核心参数的系统优化
+        3. 创新研究：新颖的改进和方法
+        4. 消融研究：系统性的组件分析
 
-        Consider factors like:
-        - Progress toward stage goals
-        - Performance trends and stability
-        - Quality and reliability of results
-        - Understanding of the problem
-        - Presence of systematic issues
-        - Convergence indicators
-        - Readiness for next stage challenges
+        考虑以下因素：
+        - 阶段目标的进展程度
+        - 性能趋势和稳定性
+        - 结果的质量和可靠性
+        - 对问题的理解程度
+        - 是否存在系统性问题
+        - 收敛指标
+        - 是否准备好迎接下一阶段的挑战
 
-        Provide a holistic evaluation of whether the experiment should:
-        1. Progress to next stage
-        2. Continue current stage with specific focus
-        3. Extend current stage with modifications
+        请提供全面的评估，判断实验是否应该：
+        1. 推进到下一阶段
+        2. 继续当前阶段并聚焦特定方向
+        3. 调整后延长当前阶段
         """
 
         try:

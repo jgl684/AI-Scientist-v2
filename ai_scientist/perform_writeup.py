@@ -151,27 +151,27 @@ def get_citation_addition(
 ):
     report, citations = context
     msg_history = []
-    citation_system_msg_template = """You are an ambitious AI researcher who is looking to publish a paper to a top-tier ML conference that will contribute significantly to the field.
-You have already completed the experiments and now you are looking to collect citations to related papers.
-This phase focuses on collecting references and annotating them to be integrated later.
-Collected citations will be added to a references.bib file.
+    citation_system_msg_template = """你是一位雄心勃勃的AI研究员，正在准备向顶级ML会议投稿一篇将对领域做出重大贡献的论文。
+你已经完成了实验，现在正在收集相关论文的引用。
+本阶段的重点是收集参考文献并为其添加注释，以便后续整合。
+收集到的引用将被添加到 references.bib 文件中。
 
-Reasons to reference papers include:
-1. Summarizing Research: Cite sources when summarizing the existing literature.
-2. Using Specific Concepts or Data: Provide citations when discussing specific theories, models, or data.
-3. Comparing Findings: Cite relevant studies when comparing or contrasting different findings.
-4. Highlighting Research Gaps: Cite previous research when pointing out gaps your survey addresses.
-5. Using Established Methods: Cite the creators of methodologies you employ in your survey.
-6. Supporting Arguments: Cite sources that back up your conclusions and arguments.
-7. Suggesting Future Research: Reference studies related to proposed future research directions.
+引用论文的原因包括：
+1. 总结研究：在总结现有文献时引用来源。
+2. 使用特定概念或数据：在讨论特定理论、模型或数据时提供引用。
+3. 比较发现：在比较或对比不同研究发现时引用相关研究。
+4. 突出研究空白：在指出你的研究所填补的空白时引用先前研究。
+5. 使用已有方法：引用你所使用的方法论的创建者。
+6. 支持论点：引用支持你的结论和论点的来源。
+7. 建议未来研究：引用与所提出的未来研究方向相关的研究。
 
-Ensure sufficient cites will be collected for all of these categories, and no categories are missed.
-You will be given access to the Semantic Scholar API; only add citations that you have found using the API.
-Aim to discuss a broad range of relevant papers, not just the most popular ones.
-Make sure not to copy verbatim from prior literature to avoid plagiarism.
-You will have {total_rounds} rounds to add to the references but do not need to use them all.
+确保为以上所有类别收集足够的引用，不要遗漏任何类别。
+你将获得 Semantic Scholar API 的访问权限；只能添加你通过该 API 找到的引用。
+尽量讨论广泛的相关论文，而不仅仅是最热门的那些。
+切勿逐字抄袭先前文献，以避免剽窃。
+你将有 {total_rounds} 轮来添加参考文献，但不需要全部用完。
 
-DO NOT ADD A CITATION THAT ALREADY EXISTS!"""
+不要添加已经存在的引用！"""
 
     citation_first_prompt_template = """Round {current_round}/{total_rounds}:
 
@@ -341,110 +341,109 @@ This JSON will be automatically parsed, so ensure the format is precise."""
     return references_prompt, False
 
 
-# Using a template string to allow injection of the {page_limit} argument
-writeup_system_message_template = """You are an ambitious AI researcher who is looking to publish a paper that will contribute significantly to the field.
-Ensure that the paper is scientifically accurate, objective, and truthful. Accurately report the experimental results, even if they are negative or inconclusive.
-You are planning to submit to a top-tier ML conference, which has guidelines:
-- The main paper is limited to {page_limit} pages, including all figures and tables, but excluding references, the impact statement, and optional appendices. In general, try to use the available space and include all relevant information.
-- The main paper should be double-column format, while the appendices can be in single-column format. When in double column format, make sure that tables and figures are correctly placed.
-- Do not change the overall style which is mandated by the conference. Keep to the current method of including the references.bib file.
-- Do not remove the \\graphicspath directive or no figures will be found.
+writeup_system_message_template = """你是一位雄心勃勃的AI研究员，正在准备发表一篇将对领域做出重大贡献的论文。
+确保论文科学准确、客观且真实。如实报告实验结果，即使结果是否定的或不确定的。
+你计划向顶级ML会议投稿，该会议有以下指南：
+- 主论文限制为 {page_limit} 页，包括所有图表，但不包括参考文献、影响声明和可选附录。一般来说，尽量充分利用可用空间，包含所有相关信息。
+- 主论文应采用双栏格式，而附录可以采用单栏格式。在双栏格式中，请确保表格和图表正确放置。
+- 不要更改会议规定的整体样式。保持当前包含 references.bib 文件的方式。
+- 不要删除 \\graphicspath 指令，否则将无法找到任何图表。
 
-Here are some tips for each section of the paper:
+以下是论文各部分的建议：
 
-- **Title**:
-  - Title should be catchy and informative. It should give a good idea of what the paper is about.
-  - Try to keep it under 2 lines.
+- **标题 (Title)**：
+  - 标题应引人注目且信息丰富，应能让读者对论文内容有一个清晰的了解。
+  - 尽量控制在2行以内。
 
-- **Abstract**:
-  - TL;DR of the paper.
-  - What are we trying to do and why is it relevant?
-  - Make sure the abstract reads smoothly and is well-motivated. This should be one continuous paragraph.
+- **摘要 (Abstract)**：
+  - 论文的 TL;DR。
+  - 我们试图做什么？为什么这很重要？
+  - 确保摘要读起来流畅且动机充分。这应是一个连续的段落。
 
-- **Introduction**:
-  - Longer version of the Abstract, i.e., an overview of the entire paper.
-  - Provide context to the study and explain its relevance.
-  - If results are inconclusive or negative, present them frankly; if they are positive, you may highlight how the approach effectively addresses the research question or problem.
-  - Summarize your contributions, highlighting pertinent findings, insights, or proposed methods.
+- **引言 (Introduction)**：
+  - 摘要的加长版本，即整篇论文的概览。
+  - 为研究提供背景并解释其重要性。
+  - 如果结果是否定的或不确定的，请坦率地呈现；如果结果是正向的，可以强调该方法如何有效地解决了研究问题。
+  - 总结你的贡献，突出相关的发现、见解或提出的方法。
 
-- **Related Work**:
-  - Academic siblings of our work, i.e., alternative attempts in literature at trying to address the same or similar problems.
-  - Compare and contrast their approach with yours, noting key differences or similarities.
-  - Ensure proper citations are provided.
+- **相关工作 (Related Work)**：
+  - 我们工作的学术同类，即文献中尝试解决相同或类似问题的替代方案。
+  - 比较和对比他们的方法与你的方法，指出关键差异或相似之处。
+  - 确保提供适当的引用。
 
-- **Background**:
-  - Present foundational concepts or prior work needed to understand your method.
-  - This should include necessary definitions, the problem setting, or relevant theoretical constructs.
+- **背景 (Background)**：
+  - 呈现理解你的方法所需的基础概念或先前工作。
+  - 这应包括必要的定义、问题设置或相关理论构造。
 
-- **Method**:
-  - Clearly detail what you propose to do and why. If your study aims to address certain hypotheses, describe them and how your method is constructed to test them.
-  - If results are negative or inconclusive, you may suggest improvements or discuss possible causes.
+- **方法 (Method)**：
+  - 清晰详细地说明你提出的方案及其理由。如果你的研究旨在解决某些假设，请描述这些假设以及你的方法如何构建来检验它们。
+  - 如果结果是否定的或不确定的，你可以提出改进建议或讨论可能的原因。
 
-- **Experimental Setup**:
-  - Explain how you tested your method or hypothesis.
-  - Describe necessary details such as data, environment, and baselines, but omit hardware details unless explicitly mentioned.
+- **实验设置 (Experimental Setup)**：
+  - 解释你如何测试你的方法或假设。
+  - 描述必要的细节，如数据、环境和基线，但除非明确提及，否则省略硬件细节。
 
-- **Experiments**:
-  - Present the results truthfully according to the data you have. If outcomes are not as expected, discuss it transparently.
-  - Include comparisons to baselines if available, and only include analyses supported by genuine data.
-  - Try to include all relevant plots and tables. Consider combining multiple plots into one figure if they are related.
+- **实验 (Experiments)**：
+  - 根据你拥有的数据如实呈现结果。如果结果不如预期，请透明地讨论。
+  - 如果可用，包含与基线的比较，并且只包含有真实数据支持的分析。
+  - 尽量包含所有相关的图表。如果相关，考虑将多个图表合并为一个图形。
 
-- **Conclusion**:
-  - Summarize the entire paper, including key strengths or findings.
-  - If results are strong, highlight how they might address the research problem.
-  - If results are negative or inconclusive, highlight potential improvements or reasons and propose future directions.
+- **结论 (Conclusion)**：
+  - 总结整篇论文，包括关键优势或发现。
+  - 如果结果很强，突出它们如何解决研究问题。
+  - 如果结果是否定的或不确定的，突出潜在的改进或原因，并提出未来方向。
 
-- **Appendix**:
-  - Place for supplementary material that did not fit in the main paper.
+- **附录 (Appendix)**：
+  - 放置主论文中放不下的补充材料。
 
-Ensure you are always writing good compilable LaTeX code. Common mistakes that should be fixed include:
-- LaTeX syntax errors (unenclosed math, unmatched braces, etc.).
-- Duplicate figure labels or references.
-- Unescaped special characters: & % $ # _ {{ }} ~ ^ \\
-- Proper table/figure closure.
-- Do not hallucinate new citations or any results not in the logs.
+确保始终编写可编译的正确 LaTeX 代码。应修复的常见错误包括：
+- LaTeX 语法错误（未闭合的数学环境、不匹配的大括号等）。
+- 重复的图标签或引用。
+- 未转义的特殊字符：& % $ # _ {{ }} ~ ^ \\
+- 正确的表格/图形闭合。
+- 不要虚构新的引用或任何不在日志中的结果。
 
-When returning final code, place it in fenced triple backticks with 'latex' syntax highlighting.
+返回最终代码时，请将其放在三个反引号围栏中，并使用 'latex' 语法高亮。
 """
 
-writeup_prompt = """Your goal is to write up the following idea:
+writeup_prompt = """你的目标是撰写以下研究思路的论文：
 
 ```markdown
 {idea_text}
 ```
 
-We have the following experiment summaries (JSON):
+我们有以下实验摘要（JSON格式）：
 ```json
 {summaries}
 ```
 
-We also have a script used to produce the final plots (use this to see how the plots are generated and what names are used in the legend):
+我们还提供了用于生成最终图表的脚本（可通过此脚本了解图表是如何生成的以及图例中使用的名称）：
 ```python
 {aggregator_code}
 ```
-Please also consider which plots should naturally be grouped together as subfigures.
+同时请考虑哪些图表应该自然地组合为子图。
 
-Available plots for the writeup (use these filenames):
+可用于论文的图表（使用这些文件名）：
 ```
 {plot_list}
 ```
 
-We also have VLM-based figure descriptions:
+我们还有基于VLM的图表描述：
 ```
 {plot_descriptions}
 ```
 
-Your current progress on the LaTeX write-up is:
+你当前的 LaTeX 论文进展如下：
 ```latex
 {latex_writeup}
 ```
 
-Produce the final version of the LaTeX manuscript now, ensuring the paper is coherent, concise, and reports results accurately.
-Return the entire file in full, with no unfilled placeholders!
-This must be an acceptable complete LaTeX writeup.
+现在请生成最终版本的 LaTeX 稿件，确保论文连贯、简洁，并准确报告结果。
+返回完整的文件内容，不要有任何未填写的占位符！
+这必须是一份可接受的完整 LaTeX 论文。
 
-Please provide the updated LaTeX code for 'template.tex', wrapped in triple backticks
-with "latex" syntax highlighting, like so:
+请在三个反引号围栏中提供更新后的 'template.tex' 的 LaTeX 代码，
+并使用 "latex" 语法高亮，格式如下：
 
 ```latex
 <UPDATED LATEX CODE>
@@ -686,24 +685,24 @@ def perform_writeup(
             ).read()
 
             reflection_prompt = f"""
-Now let's reflect and identify any issues (including but not limited to):
-1) Are there any LaTeX syntax errors or style violations we can fix? Refer to the chktex output below.
-2) Is the writing clear, and scientifically rigorous?
-3) Have we included all relevant details from the summaries without hallucinating?
-4) The following figures are available in the folder but not used in the LaTeX: {sorted(unused_figs)}
-5) The following figure references in the LaTeX do not match any actual file: {sorted(invalid_figs)}
+现在让我们反思并识别任何问题（包括但不限于）：
+1) 是否有可以修复的 LaTeX 语法错误或样式违规？请参考下方的 chktex 输出。
+2) 写作是否清晰且具有科学严谨性？
+3) 我们是否包含了摘要中的所有相关细节，且没有虚构内容？
+4) 以下图表在文件夹中存在但未在 LaTeX 中使用：{sorted(unused_figs)}
+5) 以下 LaTeX 中的图表引用与实际文件不匹配：{sorted(invalid_figs)}
 {reflection_page_info}
-chktex results:
+chktex 结果：
 ```
 {check_output}
 ```
 
-Please provide a revised complete LaTeX in triple backticks, or repeat the same if no changes are needed.
-Return the entire file in full, with no unfilled placeholders!
-This must be an acceptable complete LaTeX writeup.
-Do not hallucinate any details!
+请在三个反引号中提供修改后的完整 LaTeX，如果不需要修改也可以重复相同内容。
+返回完整的文件内容，不要有任何未填写的占位符！
+这必须是一份可接受的完整 LaTeX 论文。
+不要虚构任何细节！
 
-If you believe you are done, simply say: "I am done".
+如果你认为已经完成，只需说："I am done"。
 """
 
             reflection_response, msg_history = get_response_from_llm(

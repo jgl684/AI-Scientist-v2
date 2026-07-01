@@ -18,71 +18,71 @@ from ai_scientist.perform_icbinb_writeup import (
 
 MAX_FIGURES = 12
 
-AGGREGATOR_SYSTEM_MSG = f"""You are an ambitious AI researcher who is preparing final plots for a scientific paper submission.
-You have multiple experiment summaries (baseline, research, ablation), each possibly containing references to different plots or numerical insights.
-There is also a top-level 'research_idea.md' file that outlines the overarching research direction.
-Your job is to produce ONE Python script that fully aggregates and visualizes the final results for a comprehensive research paper.
+AGGREGATOR_SYSTEM_MSG = f"""你是一位雄心勃勃的AI研究员，正在为科学论文投稿准备最终图表。
+你有多个实验摘要（baseline、research、ablation），每个可能包含对不同图表或数值洞察的引用。
+还有一个顶层 'research_idea.md' 文件，概述了总体研究方向。
+你的任务是生成一个 Python 脚本，全面聚合和可视化最终结果，用于一篇完整的研究论文。
 
-Key points:
-1) Combine or replicate relevant existing plotting code, referencing how data was originally generated (from code references) to ensure correctness.
-2) Create a complete set of final scientific plots, stored in 'figures/' only (since only those are used in the final paper).
-3) Make sure to use existing .npy data for analysis; do NOT hallucinate data. If single numeric results are needed, these may be copied from the JSON summaries.
-4) Only create plots where the data is best presented as a figure and not as a table. E.g. don't use bar plots if the data is hard to visually compare.
-5) The final aggregator script must be in triple backticks and stand alone so it can be dropped into a codebase and run.
-6) If there are plots based on synthetic data, include them in the appendix.
+关键要点：
+1) 合并或复现相关的现有绘图代码，参考数据最初是如何生成的（通过代码引用）以确保正确性。
+2) 创建完整的最终科学图表集，仅存储在 'figures/' 中（因为只有这些会被用于最终论文）。
+3) 确保使用现有的 .npy 数据进行分析；不要虚构数据。如果需要单一数值结果，可以从 JSON 摘要中复制。
+4) 只创建最适合以图形而非表格呈现数据的图表。例如，如果数据难以视觉比较，不要使用柱状图。
+5) 最终的聚合脚本必须放在三个反引号中，并且能够独立运行，可以放入代码库直接执行。
+6) 如果存在基于合成数据的图表，将其包含在附录中。
 
-Implement best practices:
-- Do not produce extraneous or irrelevant plots.
-- Maintain clarity, minimal but sufficient code.
-- Demonstrate thoroughness for a final research paper submission.
-- Do NOT reference non-existent files or images.
-- Use the .npy files to get data for the plots and key numbers from the JSON summaries.
-- Demarcate each individual plot, and put them in separate try-catch blocks so that the failure of one plot does not affect the others.
-- Make sure to only create plots that are unique and needed for the final paper and appendix. A good number could be around {MAX_FIGURES} plots in total.
-- Aim to aggregate multiple figures into one plot if suitable, i.e. if they are all related to the same topic. You can place up to 3 plots in one row.
-- Provide well-labeled plots (axes, legends, titles) that highlight main findings. Use informative names everywhere, including in the legend for referencing them in the final paper. Make sure the legend is always visible.
-- Make the plots look professional (if applicable, no top and right spines, dpi of 300, adequate ylim, etc.).
-- Do not use labels with underscores, e.g. "loss_vs_epoch" should be "loss vs epoch".
-- For image examples, select a few categories/classes to showcase the diversity of results instead of showing a single category/class. Some can be included in the main paper, while the rest can go in the appendix.
+实现最佳实践：
+- 不要生成多余或不相关的图表。
+- 保持清晰，代码简洁但充分。
+- 展示最终研究论文投稿所需的全面性。
+- 不要引用不存在的文件或图像。
+- 使用 .npy 文件获取图表数据，使用 JSON 摘要获取关键数值。
+- 为每个图表划定边界，并将它们放在单独的 try-catch 块中，确保一个图表的失败不会影响其他图表。
+- 确保只创建最终论文和附录所需且独特的图表。总共约 {MAX_FIGURES} 个图表是比较合适的数量。
+- 如果合适，将多个图表聚合到一个图形中，即如果它们都与同一主题相关。你可以在一行中放置最多 3 个子图。
+- 提供标注清晰的图表（坐标轴、图例、标题），突出主要发现。在所有地方使用信息丰富的名称，包括图例中的名称，以便在最终论文中引用。确保图例始终可见。
+- 使图表看起来专业（如适用，去除顶部和右侧边框，dpi 设为 300，合适的 ylim 等）。
+- 不要在标签中使用下划线，例如 "loss_vs_epoch" 应为 "loss vs epoch"。
+- 对于图像示例，选择多个类别来展示结果的多样性，而不是只展示单一类别。部分可放入正文，其余放入附录。
 
-Your output should be the entire Python aggregator script in triple backticks.
+你的输出应为完整的 Python 聚合脚本，放在三个反引号中。
 """
 
 
 def build_aggregator_prompt(combined_summaries_str, idea_text):
     return f"""
-We have three JSON summaries of scientific experiments: baseline, research, ablation.
-They may contain lists of figure descriptions, code to generate the figures, and paths to the .npy files containing the numerical results.
-Our goal is to produce final, publishable figures.
+我们有三个科学实验的 JSON 摘要：baseline、research、ablation。
+它们可能包含图表描述列表、生成图表的代码以及指向包含数值结果的 .npy 文件的路径。
+我们的目标是生成最终的、可发表的图表。
 
---- RESEARCH IDEA ---
+--- 研究思路 ---
 ```
 {idea_text}
 ```
 
-IMPORTANT:
-- The aggregator script must load existing .npy experiment data from the "exp_results_npy_files" fields (ONLY using full and exact file paths in the summary JSONs) for thorough plotting.
-- It should call os.makedirs("figures", exist_ok=True) before saving any plots.
-- Aim for a balance of empirical results, ablations, and diverse, informative visuals in 'figures/' that comprehensively showcase the finalized research outcomes.
-- If you need .npy paths from the summary, only copy those paths directly (rather than copying and parsing the entire summary).
+重要提示：
+- 聚合脚本必须从 "exp_results_npy_files" 字段中加载现有的 .npy 实验数据（仅使用摘要 JSON 中完整且精确的文件路径）以进行全面的绘图。
+- 在保存任何图表之前，应调用 os.makedirs("figures", exist_ok=True)。
+- 力求在 'figures/' 中平衡实证结果、消融实验和多样化的信息丰富的可视化，全面展示最终的研究成果。
+- 如果你需要摘要中的 .npy 路径，只需直接复制这些路径（而不是复制和解析整个摘要）。
 
-Your generated Python script must:
-1) Load or refer to relevant data and .npy files from these summaries. Use the full and exact file paths in the summary JSONs.
-2) Synthesize or directly create final, scientifically meaningful plots for a final research paper (comprehensive and complete), referencing the original code if needed to see how the data was generated.
-3) Carefully combine or replicate relevant existing plotting code to produce these final aggregated plots in 'figures/' only, since only those are used in the final paper.
-4) Do not hallucinate data. Data must either be loaded from .npy files or copied from the JSON summaries.
-5) The aggregator script must be fully self-contained, and place the final plots in 'figures/'.
-6) This aggregator script should produce a comprehensive and final set of scientific plots for the final paper, reflecting all major findings from the experiment data.
-7) Make sure that every plot is unique and not duplicated from the original plots. Delete any duplicate plots if necessary.
-8) Each figure can have up to 3 subplots using fig, ax = plt.subplots(1, 3).
-9) Use a font size larger than the default for plot labels and titles to ensure they are readable in the final PDF paper.
+你生成的 Python 脚本必须：
+1) 从这些摘要中加载或引用相关数据和 .npy 文件。使用摘要 JSON 中完整且精确的文件路径。
+2) 综合或直接创建最终论文所需的、具有科学意义的最终图表（全面且完整），如果需要，参考原始代码以了解数据是如何生成的。
+3) 仔细组合或复现相关现有绘图代码，仅在 'figures/' 中生成这些最终聚合图表，因为只有这些会被用于最终论文。
+4) 不要虚构数据。数据必须从 .npy 文件加载或从 JSON 摘要中复制。
+5) 聚合脚本必须是完全自包含的，并将最终图表放置在 'figures/' 中。
+6) 此聚合脚本应为最终论文生成一套全面且最终的科研图表，反映实验数据中的所有主要发现。
+7) 确保每个图表都是独特的，不与原始图表重复。如有必要，删除任何重复的图表。
+8) 每个图形最多可包含 3 个子图，使用 fig, ax = plt.subplots(1, 3)。
+9) 对图表标签和标题使用比默认更大的字体大小，以确保在最终 PDF 论文中可读。
 
 
-Below are the summaries in JSON:
+以下是 JSON 格式的摘要：
 
 {combined_summaries_str}
 
-Respond with a Python script in triple backticks.
+请在三个反引号中返回一个 Python 脚本。
 """
 
 
@@ -201,20 +201,20 @@ def aggregate_plots(
             )
         print(f"[{i + 1} / {n_reflections}]: Number of figures: {figure_count}")
         # Reflection prompt with reminder for common checks and early exit
-        reflection_prompt = f"""We have run your aggregator script and it produced {figure_count} figure(s). The script's output is:
+        reflection_prompt = f"""我们已运行你的聚合脚本，它生成了 {figure_count} 个图表。脚本的输出如下：
 ```
 {aggregator_out}
 ```
 
-Please criticize the current script for any flaws including but not limited to:
-- Are these enough plots for a final paper submission? Don't create more than {MAX_FIGURES} plots.
-- Have you made sure to both use key numbers and generate more detailed plots from .npy files?
-- Does the figure title and legend have informative and descriptive names? These plots are the final versions, ensure there are no comments or other notes.
-- Can you aggregate multiple plots into one figure if suitable?
-- Do the labels have underscores? If so, replace them with spaces.
-- Make sure that every plot is unique and not duplicated from the original plots.
+请对当前脚本提出批评，指出任何缺陷，包括但不限于：
+- 这些图表是否足够用于最终论文投稿？不要创建超过 {MAX_FIGURES} 个图表。
+- 你确保既使用了关键数值，又从 .npy 文件生成了更详细的图表吗？
+- 图表标题和图例是否使用了信息丰富且描述性的名称？这些图表是最终版本，确保没有注释或其他备注。
+- 如果合适，可以将多个图表聚合到一个图形中吗？
+- 标签中是否包含下划线？如果有，请替换为空格。
+- 确保每个图表都是独特的，不与原始图表重复。
 
-If you believe you are done, simply say: "I am done". Otherwise, please provide an updated aggregator script in triple backticks."""
+如果你认为已完成，只需说："I am done"。否则，请在三个反引号中提供更新后的聚合脚本。"""
 
         print("[green]Reflection prompt:[/green] ", reflection_prompt)
         try:
